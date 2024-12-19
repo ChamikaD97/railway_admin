@@ -1,0 +1,10 @@
+src/
+├── components/
+│   ├── Header.js
+│   ├── HeroSection.js
+│   ├── AboutSection.js
+│   ├── Speakers.js
+│   ├── Schedule.js
+│   ├── Footer.js
+├── App.js
+└── App.css
