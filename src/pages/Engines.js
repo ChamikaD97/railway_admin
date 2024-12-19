@@ -55,7 +55,7 @@ const Engines = () => {
       key: "company",
     },
   ];
-
+  console.log(engineData);
   const handleRowClick = (record) => {
     setSelectedRow(record);
     setIsModalVisible(true);

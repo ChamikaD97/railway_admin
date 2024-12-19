@@ -7,7 +7,7 @@ const store = configureStore({
   reducer: {
     auth: authReducer,
     eng: engineReducer,
-    fail: failureReducer
+    engFail: failureReducer
   },
 });
 

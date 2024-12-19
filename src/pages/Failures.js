@@ -1,20 +1,99 @@
 import React, { useState } from "react";
-import { Table, Modal, Input, Card } from "antd";
-import { useSelector } from "react-redux";
-import DashboardTrackCard from "../sections/DashboardTrackCard";
+import { Table, Modal, Input, Card, Tag } from "antd";
 import CustomButton from "../components/CustomButton";
 import { useNavigate } from "react-router-dom";
+import dayjs from "dayjs"; // Import dayjs
+import {
+  engineFailures,
+  pendingEngineFailures,
+  completedEngineFailures,
+  inProgressEngineFailures,
+} from "../redux/failureSlice";
+import { LockFilled, LockOutlined, UserOutlined } from "@ant-design/icons";
+
+import axios from "axios";
+import { useSelector, useDispatch } from "react-redux";
+
+import { isLoading } from "../redux/authSlice";
+import { OutboundOutlined } from "@mui/icons-material";
 
 const Failures = () => {
-  const { failures } = useSelector((state) => state.fail);
-
-  const [tableData, setTableData] = useState(failures);
+  const {
+    engineFailuresData,
+    
+  
+  } = useSelector((state) => state.engFail);
+  const [filteredData, setFilteredData] = useState(engineFailuresData);
   const [selectedRow, setSelectedRow] = useState(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [filteredData, setFilteredData] = useState(failures);
   const navigate = useNavigate();
-  console.log(failures);
-  
+  const dispatch = useDispatch();
+  const getRiskTagColor = (risk) => {
+    switch (risk.toLowerCase()) {
+      case "high":
+        return "red";
+      case "medium":
+        return "orange";
+      case "low":
+        return "green";
+      default:
+        return "gray";
+    }
+  };
+  const API_URL = "http://192.168.1.233:5000";
+  const fetchEngineFailures = async () => {
+    try {
+      // const token = await AsyncStorage.getItem("token");
+      // if (!token) return navigation.navigate("Login");
+
+      const efDta = await axios.get(`${API_URL}/api/engineFailures`, {
+        headers: { Authorization: "token" },
+      });
+ 
+      dispatch(engineFailures(efDta.data));
+      setFilteredData(engineFailuresData);
+      dispatch(
+        pendingEngineFailures(efDta.data.filter((s) => s.status == "pending"))
+      );
+      dispatch(
+        inProgressEngineFailures(
+          efDta.data.filter((s) => s.status == "inProgress")
+        )
+      );
+      dispatch(
+        completedEngineFailures(
+          efDta.data.filter((s) => s.status == "completed")
+        )
+        
+      );
+    } catch (error) {
+      console.error("Error fetching engineFailures:", error.message);
+    }
+  };
+  const getStatusTagColor = (status) => {
+    switch (status.toLowerCase()) {
+      case "completed":
+        return "green";
+      case "inprogress":
+        return "orange";
+      case "pending":
+        return "blue";
+      default:
+        return "gray";
+    }
+  };
+  const formatDate = (date) => {
+    if (date) {
+      return dayjs(date).format("DD/MM/YYYY"); // Format date as needed (e.g., 'DD/MM/YYYY')
+    }
+  };
+  const getDateDifference = (reportedDate, completedDate) => {
+    if (reportedDate && completedDate) {
+      const diffInDays = dayjs(completedDate).diff(dayjs(reportedDate), "day");
+      return diffInDays; // Returns the difference in days
+    }
+    return 0;
+  };
   const columns = [
     {
       title: "Engine",
@@ -22,7 +101,7 @@ const Failures = () => {
       key: "engine",
     },
     {
-      title: "Drivcer Computer Number",
+      title: "Driver",
       dataIndex: "drivcerComNum",
       key: "drivcerComNum",
     },
@@ -30,43 +109,83 @@ const Failures = () => {
       title: "Reported Date",
       dataIndex: "date",
       key: "date",
+      render: (date) => formatDate(date),
     },
     {
       title: "Failure",
       dataIndex: "failure",
       key: "failure",
     },
+
+    // {
+    //   title: "Comments",
+    //   dataIndex: "comments",
+    //   key: "comments",
+    // },
     {
       title: "Risk",
       dataIndex: "risk",
       key: "risk",
+      render: (risk) => (
+        <Tag color={getRiskTagColor(risk)} style={{ fontWeight: "bold" }}>
+          {risk.toUpperCase()}
+        </Tag>
+      ),
     },
     {
       title: "Status",
       dataIndex: "status",
       key: "status",
-    },
-    {
-      title: "LFC Computer Number",
-      dataIndex: "LFCComNum",
-      key: "LFCComNum",
-    },
-    {
-      title: "Assinged LF",
-      dataIndex: "assingedTo",
-      key: "assingedTo",
+      render: (status) => (
+        <Tag color={getStatusTagColor(status)} style={{ fontWeight: "bold" }}>
+          {status.toUpperCase()}
+        </Tag>
+      ),
     },
     {
       title: "Started Date",
       dataIndex: "startedOn",
       key: "startedOn",
+      render: (startedOn) => formatDate(startedOn),
     },
     {
       title: "Completed Date",
       dataIndex: "completedOn",
       key: "completedOn",
+      render: (completedOn) => formatDate(completedOn), // Use the formatDate function here
+    },
+    {
+      title: "LFC",
+      dataIndex: "LFCComNum",
+      key: "LFCComNum",
+    },
+    {
+      title: "Assigned LF",
+      dataIndex: "assingedTo",
+      key: "assingedTo",
+    },
+    {
+      title: "Days to Complete", // Add new column for days difference
+      dataIndex: "dateDiff",
+      key: "dateDiff",
+      render: (_, record) => {
+        const diff = getDateDifference(record.date, record.completedOn);
+        return diff ? `${diff} days` : "N/A";
+      },
     },
   ];
+
+  const handleSearch = (event) => {
+    const value = event.target.value.toLowerCase();
+    if (!value) {
+      setFilteredData(engineFailuresData);
+      return;
+    }
+    const filtered = engineFailuresData.filter((item) =>
+      Object.values(item).join(" ").toLowerCase().includes(value)
+    );
+    setFilteredData(filtered);
+  };
 
   const handleRowClick = (record) => {
     setSelectedRow(record);
@@ -78,24 +197,8 @@ const Failures = () => {
     setSelectedRow(null);
   };
 
-  const handleSearch = (event) => {
-    const value = event.target.value.toLowerCase();
-    if (!value) {
-      setFilteredData(failures);
-      return;
-    }
-    const filtered = tableData.filter(
-      (item) =>
-        item.class?.toLowerCase().includes(value) ||
-        item.subClass?.toLowerCase().includes(value)
-    );
-    setFilteredData(filtered);
-  };
-
   return (
     <div>
-      {" "}
-      x
       <Card>
         <div
           style={{
@@ -110,13 +213,21 @@ const Failures = () => {
             onClick={() => navigate("/dashboard")}
             type="rgba(0, 145, 102, 0.78)"
           />
-          <h2 style={{ margin: 0 }} onClick={() => setFilteredData(failures)}>
-            Failures
+          <h2
+            style={{ margin: 0 }}
+            onClick={() => setFilteredData(engineFailuresData)}
+          >
+            Failures-{engineFailuresData?.length}
           </h2>
           <Input
-            placeholder="Search by Class or Sub Class"
+            placeholder="Search by any field"
             onChange={handleSearch}
             style={{ width: "300px", height: "40px", borderRadius: "15px" }}
+          />
+          <CustomButton
+            text="Refresh"
+            onClick={fetchEngineFailures}
+            type="rgba(255, 153, 51, 0.78)" // Refresh button style
           />
         </div>
         <div
@@ -135,7 +246,7 @@ const Failures = () => {
             onRow={(record) => ({
               onClick: () => handleRowClick(record),
             })}
-            pagination={true} // Disable pagination to show full data with scrolling
+            pagination={true} // Enable pagination
             scroll={{ x: true }}
             bordered
           />
@@ -151,29 +262,31 @@ const Failures = () => {
         {selectedRow && (
           <div>
             <p>
-              <strong>Class:</strong> {selectedRow.class || "N/A"}
+              <strong>Engine:</strong> {selectedRow.engine || "N/A"}
             </p>
             <p>
-              <strong>Sub Class:</strong> {selectedRow.subClass || "N/A"}
+              <strong>Driver:</strong> {selectedRow.drivcerComNum || "N/A"}
             </p>
             <p>
-              <strong>Power (Hp):</strong> {selectedRow["power(Hp)"] || "N/A"}
+              <strong>Date:</strong> {selectedRow.date || "N/A"}
             </p>
             <p>
-              <strong>Axle Structure:</strong>{" "}
-              {selectedRow.axleStructure || "N/A"}
+              <strong>Failure:</strong> {selectedRow.failure || "N/A"}
             </p>
             <p>
-              <strong>Power Engine:</strong> {selectedRow.powerEngine || "N/A"}
+              <strong>Comments:</strong> {selectedRow.comments || "N/A"}
             </p>
             <p>
-              <strong>Year:</strong> {selectedRow.year || "N/A"}
+              <strong>Risk:</strong> {selectedRow.risk || "N/A"}
             </p>
             <p>
-              <strong>Country:</strong> {selectedRow.country || "N/A"}
+              <strong>Status:</strong> {selectedRow.status || "N/A"}
             </p>
             <p>
-              <strong>Company:</strong> {selectedRow.company || "N/A"}
+              <strong>LFC:</strong> {selectedRow.LFCComNum || "N/A"}
+            </p>
+            <p>
+              <strong>Assigned LF:</strong> {selectedRow.assingedTo || "N/A"}
             </p>
           </div>
         )}

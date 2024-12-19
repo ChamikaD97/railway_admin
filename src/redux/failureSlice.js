@@ -1,30 +1,40 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-  engineData: null,
+  failuresData: null,
+  engineFailuresData: null,
+  completedEngineFailureData: null,
+  inProgressEngineFailureData: null,
+  pendingEngineFailureData: null,
 };
 
 const failuresSlice = createSlice({
-  name: "engFailures",
+  name: "engFail",
   initialState,
   reducers: {
     failures(state, action) {
-      state.engineData= action.payload;
+      state.failuresData = action.payload;
     },
     engineFailures(state, action) {
-      state.engineData= action.payload;
+      state.engineFailuresData = action.payload;
     },
     pendingEngineFailures(state, action) {
-      state.engineData= action.payload;
+      state.pendingEngineFailureData = action.payload;
     },
     inProgressEngineFailures(state, action) {
-      state.engineData= action.payload;
+      state.inProgressEngineFailureData = action.payload;
     },
     completedEngineFailures(state, action) {
-      state.engineData= action.payload;
+      state.completedEngineFailureData = action.payload;
     },
   },
 });
 
-export const { failures,engineFailures, pendingEngineFailures,completedEngineFailures, inProgressEngineFailures } = failuresSlice.actions;
+export const {
+  failures,
+  engineFailures,
+  pendingEngineFailures,
+  completedEngineFailures,
+  inProgressEngineFailures,
+} = failuresSlice.actions;
 export default failuresSlice.reducer;

@@ -20,6 +20,7 @@ import {
 import { isLoading } from "../redux/authSlice";
 
 import { useNavigate } from "react-router-dom";
+import FailureCard from "../sections/FailureCard";
 const Dashboard = () => {
   const [isHovering, setIsHovering] = useState(false);
 
@@ -84,6 +85,7 @@ const Dashboard = () => {
       const efDta = await axios.get(`${API_URL}/api/engineFailures`, {
         headers: { Authorization: "token" },
       });
+      console.log(efDta.data);
 
       dispatch(engineFailures(efDta.data));
       dispatch(
@@ -106,7 +108,7 @@ const Dashboard = () => {
   useEffect(() => {
     fetchEngines();
     fetchFailures();
-    fetchEngineFailures()
+    fetchEngineFailures();
   }, []);
 
   return (
@@ -126,7 +128,7 @@ const Dashboard = () => {
               onMouseEnter={() => setIsHovering(true)}
               onMouseLeave={() => setIsHovering(false)}
             >
-              <DashboardTrackCard />
+              <FailureCard />
             </div>
           </Col>
           <Col span={8}>
