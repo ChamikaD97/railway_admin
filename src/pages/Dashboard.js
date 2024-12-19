@@ -10,22 +10,30 @@ import { useSelector, useDispatch } from "react-redux";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import { engines } from "../redux/engineSlice";
+import {
+  failures,
+  engineFailures,
+  pendingEngineFailures,
+  completedEngineFailures,
+  inProgressEngineFailures,
+} from "../redux/failureSlice";
+import { isLoading } from "../redux/authSlice";
+
 import { useNavigate } from "react-router-dom";
 const Dashboard = () => {
   const [isHovering, setIsHovering] = useState(false);
+
   const dispatch = useDispatch();
 
   const navigate = useNavigate();
   const API_URL = "http://192.168.1.233:5000";
   const fetchEngines = async () => {
     try {
-      console.log("ok");
-
-      const token = await AsyncStorage.getItem("token");
+      // const token = await AsyncStorage.getItem("token");
       // if (!token) return     navigate('/dashboard');
 
       const engineRes = await axios.get(`${API_URL}/api/engines`, {
-        headers: { Authorization: token },
+        headers: { Authorization: "token" },
       });
 
       dispatch(engines(engineRes.data));
@@ -39,15 +47,66 @@ const Dashboard = () => {
       // if (!token) return navigation.navigate("Login");
 
       const failures = await axios.get(`${API_URL}/api/failures`, {
-        headers: { Authorization: token },
+        headers: { Authorization: "token" },
       });
-      dispatch(engines(failures.data));
+      dispatch(failures(failures.data));
     } catch (error) {
       console.error("Error fetching failures:", error.message);
     }
   };
+  const fetchEngineFailuresById = async () => {
+    try {
+      // const loggedUser = await AsyncStorage.getItem("user");
+      // const u = JSON.parse(loggedUser);
+      // const token = await AsyncStorage.getItem("token");
+      // if (!token) return navigation.navigate("Login");
+
+      const id = await AsyncStorage.getItem("failureId");
+      const response = await axios.get(
+        `${API_URL}/api/engineFailures/engineFailureById`,
+        {
+          // headers: { Authorization: token },
+          params: { id },
+        }
+      );
+    } catch (error) {
+      console.error("Error fetching engineFailures:", error.message);
+    } finally {
+      dispatch(isLoading(false));
+    }
+  };
+
+  const fetchEngineFailures = async () => {
+    try {
+      // const token = await AsyncStorage.getItem("token");
+      // if (!token) return navigation.navigate("Login");
+
+      const efDta = await axios.get(`${API_URL}/api/engineFailures`, {
+        headers: { Authorization: "token" },
+      });
+
+      dispatch(engineFailures(efDta.data));
+      dispatch(
+        pendingEngineFailures(efDta.data.filter((s) => s.status == "pending"))
+      );
+      dispatch(
+        inProgressEngineFailures(
+          efDta.data.filter((s) => s.status == "inProgress")
+        )
+      );
+      dispatch(
+        completedEngineFailures(
+          efDta.data.filter((s) => s.status == "completed")
+        )
+      );
+    } catch (error) {
+      console.error("Error fetching engineFailures:", error.message);
+    }
+  };
   useEffect(() => {
     fetchEngines();
+    fetchFailures();
+    fetchEngineFailures()
   }, []);
 
   return (
@@ -66,7 +125,6 @@ const Dashboard = () => {
             <div
               onMouseEnter={() => setIsHovering(true)}
               onMouseLeave={() => setIsHovering(false)}
-             
             >
               <DashboardTrackCard />
             </div>

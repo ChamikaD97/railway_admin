@@ -5,54 +5,66 @@ import DashboardTrackCard from "../sections/DashboardTrackCard";
 import CustomButton from "../components/CustomButton";
 import { useNavigate } from "react-router-dom";
 
-const Engines = () => {
-  const { engineData } = useSelector((state) => state.eng);
+const Failures = () => {
+  const { failures } = useSelector((state) => state.fail);
 
-  const [tableData, setTableData] = useState(engineData);
+  const [tableData, setTableData] = useState(failures);
   const [selectedRow, setSelectedRow] = useState(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [filteredData, setFilteredData] = useState(engineData);
+  const [filteredData, setFilteredData] = useState(failures);
   const navigate = useNavigate();
+  console.log(failures);
+  
   const columns = [
     {
-      title: "Class",
-      dataIndex: "class",
-      key: "class",
+      title: "Engine",
+      dataIndex: "engine",
+      key: "engine",
     },
     {
-      title: "Sub Class",
-      dataIndex: "subClass",
-      key: "subClass",
+      title: "Drivcer Computer Number",
+      dataIndex: "drivcerComNum",
+      key: "drivcerComNum",
     },
     {
-      title: "Power(Hp)",
-      dataIndex: "power(Hp)",
-      key: "power(Hp)",
+      title: "Reported Date",
+      dataIndex: "date",
+      key: "date",
     },
     {
-      title: "Axle Structure",
-      dataIndex: "axleStructure",
-      key: "axleStructure",
+      title: "Failure",
+      dataIndex: "failure",
+      key: "failure",
     },
     {
-      title: "Power Engine",
-      dataIndex: "powerEngine",
-      key: "powerEngine",
+      title: "Risk",
+      dataIndex: "risk",
+      key: "risk",
     },
     {
-      title: "Year",
-      dataIndex: "year",
-      key: "year",
+      title: "Status",
+      dataIndex: "status",
+      key: "status",
     },
     {
-      title: "Country",
-      dataIndex: "country",
-      key: "country",
+      title: "LFC Computer Number",
+      dataIndex: "LFCComNum",
+      key: "LFCComNum",
     },
     {
-      title: "Company",
-      dataIndex: "company",
-      key: "company",
+      title: "Assinged LF",
+      dataIndex: "assingedTo",
+      key: "assingedTo",
+    },
+    {
+      title: "Started Date",
+      dataIndex: "startedOn",
+      key: "startedOn",
+    },
+    {
+      title: "Completed Date",
+      dataIndex: "completedOn",
+      key: "completedOn",
     },
   ];
 
@@ -69,7 +81,7 @@ const Engines = () => {
   const handleSearch = (event) => {
     const value = event.target.value.toLowerCase();
     if (!value) {
-      setFilteredData(engineData);
+      setFilteredData(failures);
       return;
     }
     const filtered = tableData.filter(
@@ -95,12 +107,11 @@ const Engines = () => {
         >
           <CustomButton
             text="Back to Dashboard"
-          
-            onClick={()=> navigate("/dashboard")}
+            onClick={() => navigate("/dashboard")}
             type="rgba(0, 145, 102, 0.78)"
           />
-          <h2 style={{ margin: 0 }} onClick={() => setFilteredData(engineData)}>
-            Engine Data
+          <h2 style={{ margin: 0 }} onClick={() => setFilteredData(failures)}>
+            Failures
           </h2>
           <Input
             placeholder="Search by Class or Sub Class"
@@ -171,4 +182,4 @@ const Engines = () => {
   );
 };
 
-export default Engines;
+export default Failures;

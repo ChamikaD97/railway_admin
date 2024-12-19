@@ -9,7 +9,6 @@ const DashboardEngineCard = () => {
   const { engineData } = useSelector((state) => state.eng);
 
   const navigate = useNavigate();
-  console.log(engineData);
 
   const handleLogin = () => {
     navigate("/engines");
