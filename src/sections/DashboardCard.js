@@ -11,13 +11,15 @@ const DashboardEngineCard = () => {
   const navigate = useNavigate();
   console.log(engineData);
 
+  const handleLogin = () => {
+    navigate("/engines");
+  };
+
   return (
     <div>
-      <CardComponent
-        title={""}
-        imageUrl="https://via.placeholder.com/240"
-        buttonText="Click Me"
-      />
+      <CardComponent onCardClick={handleLogin} title={"Engines"}>
+        gajkadhsh
+      </CardComponent>
     </div>
   );
 };

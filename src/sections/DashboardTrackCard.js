@@ -10,6 +10,7 @@ const DashboardTrackCard = () => {
   return (
     <div>
       <CardComponent
+
         title="New Track Caustions"
         description="This is a description of card 2."
         imageUrl="https://via.placeholder.com/240"

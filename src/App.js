@@ -7,6 +7,7 @@ import { Row, Col, Modal, Badge } from "antd";
 import LoginForm from "./pages/LoginForm";
 import RegistrationForm from "./pages/RegistrationForm";
 import Dashboard from "./pages/Dashboard";
+import Engines from "./pages/Engines";
 const App = () => {
   const [isHovering, setIsHovering] = useState(false);
 
@@ -19,7 +20,8 @@ const App = () => {
         <div style={{ position: "relative" }}>
           <Routes>
             <Route path="/" element={<LoginForm />} />
-            <Route path="/register" element={<RegistrationForm />} />{" "}
+            <Route path="/register" element={<RegistrationForm />} />
+            <Route path="/engines" element={<Engines />} />
             <Route path="/dashboard" element={<Dashboard />} />
           </Routes>
           <Modal

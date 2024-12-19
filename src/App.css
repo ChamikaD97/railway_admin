@@ -40,7 +40,7 @@
 .card {
 
   width: auto;
-  background-color: rgba(231, 231, 231, 0.8);
+  background-color: rgba(231, 231, 231, 0.85);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   animation: fadeIn 1s ease-out forwards; /* Apply fade-in animation */
   height: auto;

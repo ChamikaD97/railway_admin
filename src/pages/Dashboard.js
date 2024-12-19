@@ -1,7 +1,6 @@
 // CardComponent.js
 import React, { useEffect, useState } from "react";
 
-import { Card, Button } from "antd";
 import "../App.css"; // Import the CSS file
 import CardComponent from "../components/CardComponet";
 import { Row, Col, Modal, Badge } from "antd";
@@ -28,7 +27,7 @@ const Dashboard = () => {
       const engineRes = await axios.get(`${API_URL}/api/engines`, {
         headers: { Authorization: token },
       });
-   
+
       dispatch(engines(engineRes.data));
     } catch (error) {
       console.error("Error fetching engines:", error.message);
@@ -42,8 +41,7 @@ const Dashboard = () => {
       const failures = await axios.get(`${API_URL}/api/failures`, {
         headers: { Authorization: token },
       });
-      dispatch(engines(engineRes.data));
-
+      dispatch(engines(failures.data));
     } catch (error) {
       console.error("Error fetching failures:", error.message);
     }
@@ -68,6 +66,7 @@ const Dashboard = () => {
             <div
               onMouseEnter={() => setIsHovering(true)}
               onMouseLeave={() => setIsHovering(false)}
+             
             >
               <DashboardTrackCard />
             </div>
