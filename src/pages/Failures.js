@@ -9,25 +9,20 @@ import {
   completedEngineFailures,
   inProgressEngineFailures,
 } from "../redux/failureSlice";
-import { LockFilled, LockOutlined, UserOutlined } from "@ant-design/icons";
 
 import axios from "axios";
 import { useSelector, useDispatch } from "react-redux";
 
 import { isLoading } from "../redux/authSlice";
-import { OutboundOutlined } from "@mui/icons-material";
 
 const Failures = () => {
-  const {
-    engineFailuresData,
-    
-  
-  } = useSelector((state) => state.engFail);
+  const { engineFailuresData } = useSelector((state) => state.engFail);
   const [filteredData, setFilteredData] = useState(engineFailuresData);
   const [selectedRow, setSelectedRow] = useState(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const { loading } = useSelector((state) => state.auth);
   const getRiskTagColor = (risk) => {
     switch (risk.toLowerCase()) {
       case "high":
@@ -49,7 +44,7 @@ const Failures = () => {
       const efDta = await axios.get(`${API_URL}/api/engineFailures`, {
         headers: { Authorization: "token" },
       });
- 
+
       dispatch(engineFailures(efDta.data));
       setFilteredData(engineFailuresData);
       dispatch(
@@ -64,8 +59,10 @@ const Failures = () => {
         completedEngineFailures(
           efDta.data.filter((s) => s.status == "completed")
         )
-        
       );
+      setTimeout(() => {
+        dispatch(isLoading(false));
+      }, 500);
     } catch (error) {
       console.error("Error fetching engineFailures:", error.message);
     }
@@ -208,26 +205,35 @@ const Failures = () => {
             marginBottom: "25px",
           }}
         >
-          <CustomButton
-            text="Back to Dashboard"
-            onClick={() => navigate("/dashboard")}
-            type="rgba(0, 145, 102, 0.78)"
-          />
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            <CustomButton
+              text="Back to Dashboard"
+              onClick={() => navigate("/dashboard")}
+              type="rgba(0, 145, 102, 0.78)"
+            />
+            <CustomButton
+              text="Refresh"
+              onClick={fetchEngineFailures}
+              type="rgba(145, 0, 0, 0.78)"
+            />
+          </div>
+
           <h2
             style={{ margin: 0 }}
             onClick={() => setFilteredData(engineFailuresData)}
           >
-            Failures-{engineFailuresData?.length}
+            Failures
           </h2>
           <Input
             placeholder="Search by any field"
             onChange={handleSearch}
             style={{ width: "300px", height: "40px", borderRadius: "15px" }}
-          />
-          <CustomButton
-            text="Refresh"
-            onClick={fetchEngineFailures}
-            type="rgba(255, 153, 51, 0.78)" // Refresh button style
           />
         </div>
         <div
@@ -249,6 +255,7 @@ const Failures = () => {
             pagination={true} // Enable pagination
             scroll={{ x: true }}
             bordered
+            loading={loading}
           />
         </div>
       </Card>

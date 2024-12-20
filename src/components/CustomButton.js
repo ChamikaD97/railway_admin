@@ -16,7 +16,7 @@ const CustomButton = ({
 }) => {
   // Optional: Custom loading spinner icon
   const loadingIcon = <LoadingOutlined spin />;
-
+  const refresh = <ReloadOutlined />;
   // Custom styles based on size
   const buttonStyle = {
     padding: size === "large" ? "12px 20px" : "8px 16px",
@@ -26,7 +26,9 @@ const CustomButton = ({
     backgroundColor: type,
     color: "#fff",
     border: "none",
+    marginRight:'8px',
     outline: "none",
+    
     ...style, // Allow additional styles to be passed
   };
 

@@ -1,13 +1,18 @@
 import React, { useState } from "react";
 import { Table, Modal, Input, Card } from "antd";
-import { useSelector } from "react-redux";
-import DashboardTrackCard from "../sections/DashboardTrackCard";
 import CustomButton from "../components/CustomButton";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { useSelector, useDispatch } from "react-redux";
+import { engines } from "../redux/engineSlice";
+import { isLoading } from "../redux/authSlice";
+import ReactCountryFlag from "react-country-flag";
 
 const Engines = () => {
+  const API_URL = "http://192.168.1.233:5000";
   const { engineData } = useSelector((state) => state.eng);
-
+  const { loading } = useSelector((state) => state.auth);
+  const dispatch = useDispatch();
   const [tableData, setTableData] = useState(engineData);
   const [selectedRow, setSelectedRow] = useState(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -55,7 +60,7 @@ const Engines = () => {
       key: "company",
     },
   ];
-  console.log(engineData);
+
   const handleRowClick = (record) => {
     setSelectedRow(record);
     setIsModalVisible(true);
@@ -79,11 +84,25 @@ const Engines = () => {
     );
     setFilteredData(filtered);
   };
+  const fetchEngines = async () => {
+    try {
+      // const token = await AsyncStorage.getItem("token");
+      // if (!token) return     navigate('/dashboard');
+      dispatch(isLoading(true));
+      const engineRes = await axios.get(`${API_URL}/api/engines`, {
+        headers: { Authorization: "token" },
+      });
 
+      dispatch(engines(engineRes.data));
+      setTimeout(() => {
+        dispatch(isLoading(false));
+      }, 500);
+    } catch (error) {
+      console.error("Error fetching engines:", error.message);
+    }
+  };
   return (
     <div>
-      {" "}
-      x
       <Card>
         <div
           style={{
@@ -93,15 +112,28 @@ const Engines = () => {
             marginBottom: "25px",
           }}
         >
-          <CustomButton
-            text="Back to Dashboard"
-          
-            onClick={()=> navigate("/dashboard")}
-            type="rgba(0, 145, 102, 0.78)"
-          />
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            <CustomButton
+              text="Back to Dashboard"
+              onClick={() => navigate("/dashboard")}
+              type="rgba(0, 145, 102, 0.78)"
+            />
+            <CustomButton
+              text="Refresh"
+              onClick={fetchEngines}
+              type="rgba(145, 0, 0, 0.78)"
+            />
+          </div>
           <h2 style={{ margin: 0 }} onClick={() => setFilteredData(engineData)}>
             Engine Data
           </h2>
+          
           <Input
             placeholder="Search by Class or Sub Class"
             onChange={handleSearch}
@@ -127,6 +159,7 @@ const Engines = () => {
             pagination={true} // Disable pagination to show full data with scrolling
             scroll={{ x: true }}
             bordered
+            loading={loading}
           />
         </div>
       </Card>
@@ -159,6 +192,16 @@ const Engines = () => {
               <strong>Year:</strong> {selectedRow.year || "N/A"}
             </p>
             <p>
+            <div>
+            <ReactCountryFlag
+              svg
+              style={{
+                width: "4em",
+                height: "4em",
+              }}
+              countryCode={selectedRow.country}
+            />
+          </div>
               <strong>Country:</strong> {selectedRow.country || "N/A"}
             </p>
             <p>

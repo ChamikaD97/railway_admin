@@ -5,7 +5,7 @@ import "../App.css"; // Import the CSS file
 import CardComponent from "../components/CardComponet";
 import { Row, Col, Modal, Badge } from "antd";
 import DashboardEngineCard from "../sections/DashboardCard";
-import DashboardTrackCard from "../sections/DashboardTrackCard";
+import { isLoading } from "../redux/authSlice";
 import { useSelector, useDispatch } from "react-redux";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
@@ -17,15 +17,12 @@ import {
   completedEngineFailures,
   inProgressEngineFailures,
 } from "../redux/failureSlice";
-import { isLoading } from "../redux/authSlice";
 
 import { useNavigate } from "react-router-dom";
 import FailureCard from "../sections/FailureCard";
 const Dashboard = () => {
-  const [isHovering, setIsHovering] = useState(false);
-
   const dispatch = useDispatch();
-
+  const { loading } = useSelector((state) => state.auth);
   const navigate = useNavigate();
   const API_URL = "http://192.168.1.233:5000";
   const fetchEngines = async () => {
@@ -106,46 +103,52 @@ const Dashboard = () => {
     }
   };
   useEffect(() => {
+  
+    
+    dispatch(isLoading(true));
     fetchEngines();
     fetchFailures();
     fetchEngineFailures();
+    setTimeout(()=>{
+           dispatch(isLoading(false));
+         },500)
   }, []);
 
   return (
+    
     <div>
-      <div style={{ minHeight: 360, zIndex: 2, position: "relative" }}>
-        <Row gutter={25} style={{ marginBottom: 15 }}>
-          <Col span={8}>
-            <div
-              onMouseEnter={() => setIsHovering(true)}
-              onMouseLeave={() => setIsHovering(false)}
-            >
-              <DashboardEngineCard />
-            </div>
-          </Col>
-          <Col span={8}>
-            <div
-              onMouseEnter={() => setIsHovering(true)}
-              onMouseLeave={() => setIsHovering(false)}
-            >
-              <FailureCard />
-            </div>
-          </Col>
-          <Col span={8}>
-            <div
-              onMouseEnter={() => setIsHovering(true)}
-              onMouseLeave={() => setIsHovering(false)}
-            >
-              <CardComponent
-                title="New Track Caustions"
-                description="This is a description of card 2."
-                imageUrl="https://via.placeholder.com/240"
-                buttonText="Click Me"
-              />
-            </div>
-          </Col>
-        </Row>
-      </div>
+      {!loading ?(
+ <div style={{ minHeight: 360, zIndex: 2, position: "relative" }}>
+ <Row gutter={25} style={{ marginBottom: 15 }}>
+   <Col span={8}>
+     <div>
+       <DashboardEngineCard />
+     </div>
+   </Col>
+   <Col span={8}>
+     <div>
+       <FailureCard />
+     </div>
+   </Col>
+   <Col span={8}>
+     <div>
+       <CardComponent
+         title="New Track Caustions"
+         description="This is a description of card 2."
+         imageUrl="https://via.placeholder.com/240"
+         buttonText="Click Me"
+       />
+     </div>
+   </Col>
+ </Row>
+</div>
+):(
+  <>
+  Loading
+  </>
+)}
+     
+    
     </div>
   );
 };
