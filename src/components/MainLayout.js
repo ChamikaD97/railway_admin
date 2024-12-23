@@ -3,6 +3,7 @@ import React from "react";
 import { Layout } from "antd";
 import HeaderComponent from "./Header";
 import background from "../images/background.jpg"; // Adjust the path accordingly
+import backgroundN from "../images/111.jpg"; // Adjust the path accordingly
 
 const { Content, Footer } = Layout;
 
@@ -13,7 +14,7 @@ const MainLayout = ({ children }) => {
       <div
         style={{
           height: "100vh", // Full viewport height
-          backgroundImage: `url(${background})`,
+          backgroundImage: `url(${backgroundN})`,
           backgroundSize: "cover", // Ensures the image covers the entire div
           backgroundPosition: "center", // Centers the image
         }}

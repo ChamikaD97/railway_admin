@@ -16,9 +16,10 @@ const FailureCard = () => {
 
   return (
     <div>
-      <CardComponent onCardClick={handleLogin} title={"failures"}>
-        gajkadhsh
-      </CardComponent>
+      <CardComponent
+        onCardClick={handleLogin}
+        title={"Failures"}
+      ></CardComponent>
     </div>
   );
 };

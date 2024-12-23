@@ -1,16 +1,16 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Table, Modal, Input, Card } from "antd";
 import CustomButton from "../components/CustomButton";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useSelector, useDispatch } from "react-redux";
-import { engines } from "../redux/engineSlice";
+import { engines, enginesClasses } from "../redux/engineSlice";
 import { isLoading } from "../redux/authSlice";
 import ReactCountryFlag from "react-country-flag";
 
 const Engines = () => {
   const API_URL = "http://192.168.1.233:5000";
-  const { engineData } = useSelector((state) => state.eng);
+  const { engineData, search } = useSelector((state) => state.eng);
   const { loading } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
   const [tableData, setTableData] = useState(engineData);
@@ -18,6 +18,7 @@ const Engines = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [filteredData, setFilteredData] = useState(engineData);
   const navigate = useNavigate();
+
   const columns = [
     {
       title: "Class",
@@ -77,6 +78,8 @@ const Engines = () => {
       setFilteredData(engineData);
       return;
     }
+    console.log(value);
+    
     const filtered = tableData.filter(
       (item) =>
         item.class?.toLowerCase().includes(value) ||
@@ -101,6 +104,25 @@ const Engines = () => {
       console.error("Error fetching engines:", error.message);
     }
   };
+
+  useEffect(() => {
+    console.log(search);
+    
+    if (!search) {
+      setFilteredData(engineData);
+      return;
+    }
+    console.log(search);
+    console.log(engineData);
+    
+    const filtered = engineData.filter((item) =>
+      item.class?.toLowerCase().includes(search.toLowerCase())
+    );
+    
+    setFilteredData(filtered);
+
+    
+  });
   return (
     <div>
       <Card>
@@ -131,9 +153,9 @@ const Engines = () => {
             />
           </div>
           <h2 style={{ margin: 0 }} onClick={() => setFilteredData(engineData)}>
-            Engine Data
+            Engine Details
           </h2>
-          
+
           <Input
             placeholder="Search by Class or Sub Class"
             onChange={handleSearch}
@@ -192,17 +214,16 @@ const Engines = () => {
               <strong>Year:</strong> {selectedRow.year || "N/A"}
             </p>
             <p>
-            <div>
-            <ReactCountryFlag
-              svg
-              style={{
-                width: "4em",
-                height: "4em",
-              }}
-              countryCode={selectedRow.country}
-            />
-          </div>
-              <strong>Country:</strong> {selectedRow.country || "N/A"}
+              <div></div>
+              <strong>Country: </strong>
+              <ReactCountryFlag
+                svg
+                style={{
+                  width: "8em",
+                  height: "5em",
+                }}
+                countryCode={selectedRow.country}
+              />
             </p>
             <p>
               <strong>Company:</strong> {selectedRow.company || "N/A"}

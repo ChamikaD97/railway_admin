@@ -3,7 +3,7 @@ import { Table, Modal, Input, Card, Tag } from "antd";
 import CustomButton from "../components/CustomButton";
 import { useNavigate } from "react-router-dom";
 import dayjs from "dayjs"; // Import dayjs
-import { 
+import {
   engineFailures,
   pendingEngineFailures,
   completedEngineFailures,
@@ -16,9 +16,15 @@ import { useSelector, useDispatch } from "react-redux";
 import { isLoading } from "../redux/authSlice";
 
 const Failures = () => {
-  const { engineFailuresData } = useSelector((state) => state.engFail);
+  const {
+    engineFailuresData,
+    completedEngineFailureData,
+    inProgressEngineFailureData,
+    pendingEngineFailureData,
+  } = useSelector((state) => state.engFail);
   const [filteredData, setFilteredData] = useState(engineFailuresData);
   const [selectedRow, setSelectedRow] = useState(null);
+  const [name, setName] = useState("ENGINE FAILURES");
   const [isModalVisible, setIsModalVisible] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -175,7 +181,6 @@ const Failures = () => {
   const handleSearch = (event) => {
     const value = event.target.value.toLowerCase();
     if (!value) {
-      setFilteredData(engineFailuresData);
       return;
     }
     const filtered = engineFailuresData.filter((item) =>
@@ -202,7 +207,9 @@ const Failures = () => {
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
-            marginBottom: "25px",
+            borderBottomColor: "black",
+            borderBottom: "0.5px solid",paddingBottom: "3px",
+            paddingTop: "3px",
           }}
         >
           <div
@@ -228,7 +235,7 @@ const Failures = () => {
             style={{ margin: 0 }}
             onClick={() => setFilteredData(engineFailuresData)}
           >
-            Failures
+            {name}
           </h2>
           <Input
             placeholder="Search by any field"
@@ -236,6 +243,51 @@ const Failures = () => {
             style={{ width: "300px", height: "40px", borderRadius: "15px" }}
           />
         </div>
+
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "start",
+            alignItems: "center",
+            paddingBottom: "3px",
+            paddingTop: "3px",
+            borderBottomColor: "black",
+            borderBottom: "1px solid",
+          }}
+        >
+          <CustomButton
+            text={"ENGINE FAILURES - " + engineFailuresData?.length}
+            onClick={() => {
+              setFilteredData(engineFailuresData);
+              setName("ENGINE FAILURES");
+            }}
+            type="rgb(0, 0, 0)"
+          />
+          <CustomButton
+            text={"PENDING - " + pendingEngineFailureData?.length}
+            onClick={() => {
+              setFilteredData(pendingEngineFailureData);
+              setName("PENDING FAILURES");
+              setFilteredData(pendingEngineFailureData);
+            }}
+            type="rgba(0, 0, 145, 0.78)"
+          />
+          <CustomButton
+            text={"IN PROGRESS  - " + inProgressEngineFailureData?.length}
+            onClick={() => {
+              setFilteredData(inProgressEngineFailureData);
+              setName("PROGRESS FAILURES");
+              setFilteredData(inProgressEngineFailureData);
+            }}
+            type="rgba(145, 99, 0, 0.78)"
+          />
+          <CustomButton
+            text={"COMPLETED  - " + completedEngineFailureData?.length}
+            onClick={() => setFilteredData(completedEngineFailureData)}
+            type="rgba(0, 145, 0, 0.78)"
+          />
+        </div>
+
         <div
           style={{
             maxHeight: "calc(100vh - 200px)", // Adjust height to fit window

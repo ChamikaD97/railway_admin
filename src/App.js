@@ -9,6 +9,7 @@ import RegistrationForm from "./pages/RegistrationForm";
 import Dashboard from "./pages/Dashboard";
 import Engines from "./pages/Engines";
 import Failures from "./pages/Failures";
+import EngineClasses from "./pages/Engine Classes";
 const App = () => {
   const [isHovering, setIsHovering] = useState(false);
 
@@ -23,6 +24,7 @@ const App = () => {
             <Route path="/" element={<LoginForm />} />
             <Route path="/register" element={<RegistrationForm />} />
             <Route path="/engines" element={<Engines />} />
+            <Route path="/enginesclasses" element={<EngineClasses />} />
             <Route path="/failures" element={<Failures />} />
             <Route path="/dashboard" element={<Dashboard />} />
           </Routes>

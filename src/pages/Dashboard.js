@@ -2,14 +2,13 @@
 import React, { useEffect, useState } from "react";
 
 import "../App.css"; // Import the CSS file
-import CardComponent from "../components/CardComponet";
 import { Row, Col, Modal, Badge } from "antd";
-import DashboardEngineCard from "../sections/DashboardCard";
+import DashboardEngineCard from "../sections/DashboardEngineCard";
 import { isLoading } from "../redux/authSlice";
 import { useSelector, useDispatch } from "react-redux";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
-import { engines } from "../redux/engineSlice";
+import { engines, enginesClasses, setSearch } from "../redux/engineSlice";
 import {
   failures,
   engineFailures,
@@ -20,6 +19,7 @@ import {
 
 import { useNavigate } from "react-router-dom";
 import FailureCard from "../sections/FailureCard";
+import DashboardEngineClassesCard from "../sections/DashboardEngineClassesCard";
 const Dashboard = () => {
   const dispatch = useDispatch();
   const { loading } = useSelector((state) => state.auth);
@@ -33,7 +33,15 @@ const Dashboard = () => {
       const engineRes = await axios.get(`${API_URL}/api/engines`, {
         headers: { Authorization: "token" },
       });
-
+      const classCounts = engineRes.data.reduce((acc, item) => {
+        acc[item.class] = (acc[item.class] || 0) + 1;
+        return acc;
+      }, {});
+      const classCountsArray = Object.entries(classCounts).map(([className, count]) => ({
+        className,
+        count
+      }));
+      dispatch(enginesClasses(classCountsArray));
       dispatch(engines(engineRes.data));
     } catch (error) {
       console.error("Error fetching engines:", error.message);
@@ -82,7 +90,6 @@ const Dashboard = () => {
       const efDta = await axios.get(`${API_URL}/api/engineFailures`, {
         headers: { Authorization: "token" },
       });
-      console.log(efDta.data);
 
       dispatch(engineFailures(efDta.data));
       dispatch(
@@ -103,52 +110,41 @@ const Dashboard = () => {
     }
   };
   useEffect(() => {
-  
-    
+     dispatch(setSearch());
     dispatch(isLoading(true));
     fetchEngines();
     fetchFailures();
     fetchEngineFailures();
-    setTimeout(()=>{
-           dispatch(isLoading(false));
-         },500)
+    setTimeout(() => {
+      dispatch(isLoading(false));
+    }, 500);
   }, []);
 
   return (
-    
     <div>
-      {!loading ?(
- <div style={{ minHeight: 360, zIndex: 2, position: "relative" }}>
- <Row gutter={25} style={{ marginBottom: 15 }}>
-   <Col span={8}>
-     <div>
-       <DashboardEngineCard />
-     </div>
-   </Col>
-   <Col span={8}>
-     <div>
-       <FailureCard />
-     </div>
-   </Col>
-   <Col span={8}>
-     <div>
-       <CardComponent
-         title="New Track Caustions"
-         description="This is a description of card 2."
-         imageUrl="https://via.placeholder.com/240"
-         buttonText="Click Me"
-       />
-     </div>
-   </Col>
- </Row>
-</div>
-):(
-  <>
-  Loading
-  </>
-)}
-     
-    
+      {!loading ? (
+        <div style={{ minHeight: 360, zIndex: 2, position: "relative" }}>
+          <Row gutter={25} style={{ marginBottom: 15 }}>
+            <Col span={8}>
+              <div>
+               <DashboardEngineClassesCard/>
+              </div>
+            </Col>
+            <Col span={8}>
+              <div>
+                <DashboardEngineCard />
+              </div>
+            </Col>
+            <Col span={8}>
+              <div>
+                <FailureCard />
+              </div>
+            </Col>
+          </Row>
+        </div>
+      ) : (
+        <>Loading</>
+      )}
     </div>
   );
 };

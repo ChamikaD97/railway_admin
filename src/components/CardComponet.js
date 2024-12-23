@@ -26,17 +26,14 @@ const CardComponent = ({
       <Typography.Title  level={3} style={{ margin: 5 }}>
        {title}
       </Typography.Title>
-        <Card
+        {/* <Card
        
           bordered={true}
          
         >
           {children}
-        </Card>
-        <Row gutter={25} style={{ marginBottom: 15 }}>
-          
-         
-        </Row>
+        </Card> */}
+      
       </Card>
     </div>
   );
