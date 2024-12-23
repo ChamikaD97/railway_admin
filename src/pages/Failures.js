@@ -209,7 +209,6 @@ const Failures = () => {
             alignItems: "center",
             borderBottomColor: "black",
             borderBottom: "0.5px solid",paddingBottom: "3px",
-            paddingTop: "3px",
           }}
         >
           <div
@@ -220,7 +219,7 @@ const Failures = () => {
             }}
           >
             <CustomButton
-              text="Back to Dashboard"
+              text="Home"
               onClick={() => navigate("/dashboard")}
               type="rgba(0, 145, 102, 0.78)"
             />
@@ -238,7 +237,7 @@ const Failures = () => {
             {name}
           </h2>
           <Input
-            placeholder="Search by any field"
+            placeholder="Search..."
             onChange={handleSearch}
             style={{ width: "300px", height: "40px", borderRadius: "15px" }}
           />

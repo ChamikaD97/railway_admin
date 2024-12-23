@@ -4,7 +4,7 @@ import CustomButton from "../components/CustomButton";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useSelector, useDispatch } from "react-redux";
-import { engines, enginesClasses } from "../redux/engineSlice";
+import { engines, enginesClasses, setSearch } from "../redux/engineSlice";
 import { isLoading } from "../redux/authSlice";
 import ReactCountryFlag from "react-country-flag";
 
@@ -72,22 +72,37 @@ const Engines = () => {
     setSelectedRow(null);
   };
 
+  // const handleSearch = (event) => {
+  //   const value = event.target.value.toLowerCase();
+  //   if (!value) {
+  //     setFilteredData(engineData);
+  //     return;
+  //   }
+  //   console.log(value);
+
+  //   const filtered = tableData.filter(
+  //     (item) =>
+  //       item.class?.toLowerCase().includes(value) ||
+  //       item.subClass?.toLowerCase().includes(value)
+  //   );
+  //   setFilteredData(filtered);
+  // };
+
   const handleSearch = (event) => {
     const value = event.target.value.toLowerCase();
     if (!value) {
-      setFilteredData(engineData);
       return;
     }
-    console.log(value);
-    
-    const filtered = tableData.filter(
-      (item) =>
-        item.class?.toLowerCase().includes(value) ||
-        item.subClass?.toLowerCase().includes(value)
+    const filtered = engineData.filter((item) =>
+      Object.values(item).join(" ").toLowerCase().includes(value)
     );
     setFilteredData(filtered);
   };
+
+
   const fetchEngines = async () => {
+    dispatch(setSearch());
+
     try {
       // const token = await AsyncStorage.getItem("token");
       // if (!token) return     navigate('/dashboard');
@@ -97,6 +112,8 @@ const Engines = () => {
       });
 
       dispatch(engines(engineRes.data));
+      setFilteredData(engineData);
+
       setTimeout(() => {
         dispatch(isLoading(false));
       }, 500);
@@ -106,23 +123,17 @@ const Engines = () => {
   };
 
   useEffect(() => {
-    console.log(search);
-    
     if (!search) {
       setFilteredData(engineData);
       return;
     }
-    console.log(search);
-    console.log(engineData);
-    
+
     const filtered = engineData.filter((item) =>
       item.class?.toLowerCase().includes(search.toLowerCase())
     );
-    
-    setFilteredData(filtered);
 
-    
-  });
+    setFilteredData(filtered);
+  }, []);
   return (
     <div>
       <Card>
@@ -142,7 +153,7 @@ const Engines = () => {
             }}
           >
             <CustomButton
-              text="Back to Dashboard"
+              text="Home"
               onClick={() => navigate("/dashboard")}
               type="rgba(0, 145, 102, 0.78)"
             />
@@ -157,7 +168,7 @@ const Engines = () => {
           </h2>
 
           <Input
-            placeholder="Search by Class or Sub Class"
+            placeholder="Search..."
             onChange={handleSearch}
             style={{ width: "300px", height: "40px", borderRadius: "15px" }}
           />

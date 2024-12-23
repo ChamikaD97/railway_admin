@@ -10,7 +10,7 @@ import ReactCountryFlag from "react-country-flag";
 
 const EngineClasses = () => {
   const API_URL = "http://192.168.1.233:5000";
-  const { enginesClasses } = useSelector((state) => state.eng);
+  const { enginesClasses, search } = useSelector((state) => state.eng);
   const { loading } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
   const [tableData, setTableData] = useState(enginesClasses);
@@ -33,7 +33,6 @@ const EngineClasses = () => {
   const handleRowClick = (record) => {
     dispatch(setSearch(record.className));
     navigate('/engines')
-    
   };
 
   const handleSearch = (event) => {
@@ -89,7 +88,7 @@ const EngineClasses = () => {
             }}
           >
             <CustomButton
-              text="Back to Dashboard"
+              text="Home"
               onClick={() => navigate("/dashboard")}
               type="rgba(0, 145, 102, 0.78)"
             />
@@ -103,7 +102,7 @@ const EngineClasses = () => {
             style={{ margin: 0 }}
             onClick={() => setFilteredData(enginesClasses)}
           >
-            Engine Classes
+            Engine Classes 
           </h2>
 
           <Input
