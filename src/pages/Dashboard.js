@@ -20,6 +20,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import FailureCard from "../sections/FailureCard";
 import DashboardEngineClassesCard from "../sections/DashboardEngineClassesCard";
+import Loader from "../components/Loader";
 const Dashboard = () => {
   const dispatch = useDispatch();
   const { loading } = useSelector((state) => state.auth);
@@ -37,10 +38,12 @@ const Dashboard = () => {
         acc[item.class] = (acc[item.class] || 0) + 1;
         return acc;
       }, {});
-      const classCountsArray = Object.entries(classCounts).map(([className, count]) => ({
-        className,
-        count
-      }));
+      const classCountsArray = Object.entries(classCounts).map(
+        ([className, count]) => ({
+          className,
+          count,
+        })
+      );
       dispatch(enginesClasses(classCountsArray));
       dispatch(engines(engineRes.data));
     } catch (error) {
@@ -110,7 +113,7 @@ const Dashboard = () => {
     }
   };
   useEffect(() => {
-     dispatch(setSearch());
+    dispatch(setSearch());
     dispatch(isLoading(true));
     fetchEngines();
     fetchFailures();
@@ -127,7 +130,7 @@ const Dashboard = () => {
           <Row gutter={25} style={{ marginBottom: 15 }}>
             <Col span={8}>
               <div>
-               <DashboardEngineClassesCard/>
+                <DashboardEngineClassesCard />
               </div>
             </Col>
             <Col span={8}>
@@ -143,7 +146,7 @@ const Dashboard = () => {
           </Row>
         </div>
       ) : (
-        <>Loading</>
+        <Loader />
       )}
     </div>
   );

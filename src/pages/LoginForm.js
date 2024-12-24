@@ -12,7 +12,8 @@ const LoginForm = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const handleRegister = () => {
-    alert("sss");
+    navigate('/register')
+
   };
   
 

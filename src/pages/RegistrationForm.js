@@ -1,84 +1,43 @@
+// App.js
 import React from 'react';
-import { Form, Input, Button, message } from 'antd';
-import { useDispatch } from 'react-redux';
-import { register } from '../redux/authSlice';
+import { Bar } from 'react-chartjs-2';
+import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
 
-const RegistrationForm = () => {
-  const dispatch = useDispatch();
+ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
-  const onFinish = (values) => {
-    console.log('Registration Success:', values);
-    dispatch(register({ username: values.username, email: values.email }));
-    message.success('Registration successful!');
-  };
-
-  const onFinishFailed = (errorInfo) => {
-    console.error('Registration Failed:', errorInfo);
-    message.error('Please check the form for errors.');
-  };
-
-  return (
-    <Form
-      name="register"
-      labelCol={{ span: 8 }}
-      wrapperCol={{ span: 16 }}
-      onFinish={onFinish}
-      onFinishFailed={onFinishFailed}
-      autoComplete="off"
-    >
-      <Form.Item
-        label="Username"
-        name="username"
-        rules={[{ required: true, message: 'Please input your username!' }]}
-      >
-        <Input />
-      </Form.Item>
-
-      <Form.Item
-        label="Email"
-        name="email"
-        rules={[
-          { required: true, message: 'Please input your email!' },
-          { type: 'email', message: 'The input is not a valid email!' },
-        ]}
-      >
-        <Input />
-      </Form.Item>
-
-      <Form.Item
-        label="Password"
-        name="password"
-        rules={[{ required: true, message: 'Please input your password!' }]}
-      >
-        <Input.Password />
-      </Form.Item>
-
-      <Form.Item
-        label="Confirm Password"
-        name="confirmPassword"
-        dependencies={['password']}
-        rules={[
-          { required: true, message: 'Please confirm your password!' },
-          ({ getFieldValue }) => ({
-            validator(_, value) {
-              if (!value || getFieldValue('password') === value) {
-                return Promise.resolve();
-              }
-              return Promise.reject(new Error('Passwords do not match!'));
-            },
-          }),
-        ]}
-      >
-        <Input.Password />
-      </Form.Item>
-
-      <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
-        <Button type="primary" htmlType="submit">
-          Register
-        </Button>
-      </Form.Item>
-    </Form>
-  );
+const data = {
+  labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+  datasets: [
+    {
+      label: 'Sales',
+      data: [65, 59, 80, 81, 56, 55, 40],
+      backgroundColor: 'rgb(0, 0, 0)',
+      borderColor: 'rgba(255, 99, 132, 1)',
+      borderWidth: 1,
+    },
+  ],
 };
 
-export default RegistrationForm;
+const options = {
+  responsive: true,
+  plugins: {
+    legend: {
+      position: 'top',
+    },
+    title: {
+      display: true,
+      text: 'Monthly Sales Data',
+    },
+  },
+};
+
+function Appa() {
+  return (
+    <div>
+      <h2>Bar Chart Example</h2>
+      <Bar data={data} options={options} />
+    </div>
+  );
+}
+
+export default Appa;
