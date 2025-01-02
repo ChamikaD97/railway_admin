@@ -24,7 +24,7 @@ const Failures = () => {
   } = useSelector((state) => state.engFail);
   const [filteredData, setFilteredData] = useState(engineFailuresData);
   const [selectedRow, setSelectedRow] = useState(null);
-  const [name, setName] = useState("ENGINE FAILURES");
+  const [name, setName] = useState("LOCO FAILURES");
   const [isModalVisible, setIsModalVisible] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -208,7 +208,8 @@ const Failures = () => {
             justifyContent: "space-between",
             alignItems: "center",
             borderBottomColor: "black",
-            borderBottom: "0.5px solid",paddingBottom: "3px",
+            borderBottom: "0.5px solid",
+            paddingBottom: "3px",
           }}
         >
           <div
@@ -258,7 +259,7 @@ const Failures = () => {
             text={"ENGINE FAILURES - " + engineFailuresData?.length}
             onClick={() => {
               setFilteredData(engineFailuresData);
-              setName("ENGINE FAILURES");
+              setName("LOCO FAILURES");
             }}
             type="rgb(0, 0, 0)"
           />
@@ -275,14 +276,17 @@ const Failures = () => {
             text={"IN PROGRESS  - " + inProgressEngineFailureData?.length}
             onClick={() => {
               setFilteredData(inProgressEngineFailureData);
-              setName("PROGRESS FAILURES");
+              setName("IN PROGRESS FAILURES");
               setFilteredData(inProgressEngineFailureData);
             }}
             type="rgba(145, 99, 0, 0.78)"
           />
           <CustomButton
             text={"COMPLETED  - " + completedEngineFailureData?.length}
-            onClick={() => setFilteredData(completedEngineFailureData)}
+            onClick={() => {
+              setFilteredData(completedEngineFailureData);
+              setName("COMPLETED FAILURES");
+            }}
             type="rgba(0, 145, 0, 0.78)"
           />
         </div>

@@ -7,7 +7,8 @@ import { useSelector, useDispatch } from "react-redux";
 import { engines, enginesClasses, setSearch } from "../redux/engineSlice";
 import { isLoading } from "../redux/authSlice";
 import ReactCountryFlag from "react-country-flag";
-
+import jsPDF from "jspdf";
+import "jspdf-autotable";
 const Engines = () => {
   const API_URL = "http://192.168.1.233:5000";
   const { engineData, search } = useSelector((state) => state.eng);
@@ -59,6 +60,10 @@ const Engines = () => {
       title: "Company",
       dataIndex: "company",
       key: "company",
+    },  {
+      title: "Shed",
+      dataIndex: "Shed",
+      key: "shed",
     },
   ];
 
@@ -87,7 +92,16 @@ const Engines = () => {
   //   );
   //   setFilteredData(filtered);
   // };
+  const exportToPDF = (data, columns, fileName) => {
+    const doc = new jsPDF();
+    
 
+    doc.autoTable({
+      head: [columns],
+      body: data.map((item) => columns.map((col) => item[col.key])),
+    });
+    doc.save(`${fileName}.pdf`);
+  };
   const handleSearch = (event) => {
     const value = event.target.value.toLowerCase();
     if (!value) {
@@ -98,7 +112,6 @@ const Engines = () => {
     );
     setFilteredData(filtered);
   };
-
 
   const fetchEngines = async () => {
     dispatch(setSearch());
@@ -160,18 +173,36 @@ const Engines = () => {
             <CustomButton
               text="Refresh"
               onClick={fetchEngines}
-              type="rgba(145, 0, 0, 0.78)"
+              type="rgba(145, 0, 0, 0.64)"
+            />
+            <CustomButton
+              text="Engine Classes"
+              onClick={() => navigate("/enginesClasses")}
+              type="rgba(0, 0, 0, 0.78)"
             />
           </div>
           <h2 style={{ margin: 0 }} onClick={() => setFilteredData(engineData)}>
             Engine Details
           </h2>
-
-          <Input
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            <Input
             placeholder="Search..."
             onChange={handleSearch}
             style={{ width: "300px", height: "40px", borderRadius: "15px" }}
           />
+            <CustomButton
+              text="Downlaod"
+              onClick={() => exportToPDF(filteredData, columns, "TableData")}
+              type="rgba(0, 15, 145, 0.79)"
+            />
+          </div>
+          
         </div>
         <div
           style={{
@@ -220,6 +251,13 @@ const Engines = () => {
             </p>
             <p>
               <strong>Power Engine:</strong> {selectedRow.powerEngine || "N/A"}
+            </p>
+            <p>
+              <strong>Year:</strong> {selectedRow.year || "N/A"}
+            </p>
+
+            <p>
+              <strong>Axle Load(Weight/axcels):</strong> {selectedRow.powerEngine || "N/A"}
             </p>
             <p>
               <strong>Year:</strong> {selectedRow.year || "N/A"}

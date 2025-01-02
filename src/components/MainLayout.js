@@ -3,7 +3,7 @@ import React from "react";
 import { Layout } from "antd";
 import HeaderComponent from "./Header";
 import background from "../images/background.jpg"; // Adjust the path accordingly
-import backgroundN from "../images/111.jpg"; // Adjust the path accordingly
+import backgroundN from "../images/1.jpg"; // Adjust the path accordingly
 
 const { Content, Footer } = Layout;
 

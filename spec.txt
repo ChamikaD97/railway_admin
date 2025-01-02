@@ -1,0 +1,15 @@
+defects reported by loco drivers
+
+defects are managed by LFC
+
+
+
+
+notification when 3 defects are happen for same engine
+
+defect not done by 30 days
+
+
+store management
+
+track cautions

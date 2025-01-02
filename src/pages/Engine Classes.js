@@ -5,8 +5,8 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useSelector, useDispatch } from "react-redux";
 import { engines, enginesClasses, setSearch } from "../redux/engineSlice";
-import { isLoading } from "../redux/authSlice";
-import ReactCountryFlag from "react-country-flag";
+import jsPDF from "jspdf";
+import "jspdf-autotable";
 
 const EngineClasses = () => {
   const API_URL = "http://192.168.1.233:5000";
@@ -32,7 +32,7 @@ const EngineClasses = () => {
 
   const handleRowClick = (record) => {
     dispatch(setSearch(record.className));
-    navigate('/engines')
+    navigate("/engines");
   };
 
   const handleSearch = (event) => {
@@ -47,7 +47,7 @@ const EngineClasses = () => {
     setFilteredData(filtered);
   };
 
- const fetchEngines = async () => {
+  const fetchEngines = async () => {
     try {
       // const token = await AsyncStorage.getItem("token");
       // if (!token) return     navigate('/dashboard');
@@ -59,16 +59,27 @@ const EngineClasses = () => {
         acc[item.class] = (acc[item.class] || 0) + 1;
         return acc;
       }, {});
-      const classCountsArray = Object.entries(classCounts).map(([className, count]) => ({
-        className,
-        count
-      }));
+      const classCountsArray = Object.entries(classCounts).map(
+        ([className, count]) => ({
+          className,
+          count,
+        })
+      );
       dispatch(enginesClasses(classCountsArray));
       dispatch(engines(engineRes.data));
     } catch (error) {
       console.error("Error fetching engines:", error.message);
     }
   };
+  const exportToPDF = (data, columns, fileName) => {
+    const doc = new jsPDF();
+    doc.autoTable({
+      head: [columns],
+      body: data.map((item) => columns.map((col) => item[col.key])),
+    });
+    doc.save(`${fileName}.pdf`);
+  };
+
   return (
     <div>
       <Card>
@@ -97,19 +108,36 @@ const EngineClasses = () => {
               onClick={fetchEngines}
               type="rgba(145, 0, 0, 0.78)"
             />
+            <CustomButton
+              text="Engines"
+              onClick={() => navigate("/engines")}
+              type="rgba(0, 0, 0, 0.78)"
+            />
           </div>
           <h2
             style={{ margin: 0 }}
             onClick={() => setFilteredData(enginesClasses)}
           >
-            Engine Classes 
+            Engine Classes
           </h2>
-
-          <Input
-            placeholder="Search by Class or Sub Class"
-            onChange={handleSearch}
-            style={{ width: "300px", height: "40px", borderRadius: "15px" }}
-          />
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            <Input
+              placeholder="Search by Class or Sub Class"
+              onChange={handleSearch}
+              style={{ width: "300px", height: "40px", borderRadius: "5px", marginRight:5 }}
+            />
+            <CustomButton
+              text="Downlaod"
+              onClick={() => exportToPDF(filteredData, columns, "TableData")}
+              type="rgba(0, 15, 145, 0.79)"
+            />
+          </div>
         </div>
         <div
           style={{
