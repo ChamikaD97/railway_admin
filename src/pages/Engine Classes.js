@@ -9,7 +9,7 @@ import jsPDF from "jspdf";
 import "jspdf-autotable";
 
 const EngineClasses = () => {
-  const API_URL = "http://192.168.1.233:5000";
+  const API_URL = "http://ec2-13-61-34-101.eu-north-1.compute.amazonaws.com:5000";
   const { enginesClasses, search } = useSelector((state) => state.eng);
   const { loading } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
