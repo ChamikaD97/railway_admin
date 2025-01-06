@@ -8,8 +8,14 @@ import { engines, enginesClasses, setSearch } from "../redux/engineSlice";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
 
+import {
+  ReloadOutlined,
+  DownloadOutlined,
+} from "@ant-design/icons"; // Import the icon
+
 const EngineClasses = () => {
-  const API_URL = "http://ec2-13-61-34-101.eu-north-1.compute.amazonaws.com:5000";
+  const API_URL =
+    "http://ec2-13-61-34-101.eu-north-1.compute.amazonaws.com:5000";
   const { enginesClasses, search } = useSelector((state) => state.eng);
   const { loading } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
@@ -105,6 +111,7 @@ const EngineClasses = () => {
             />
             <CustomButton
               text="Refresh"
+              icon={<ReloadOutlined />}
               onClick={fetchEngines}
               type="rgba(145, 0, 0, 0.78)"
             />
@@ -130,10 +137,16 @@ const EngineClasses = () => {
             <Input
               placeholder="Search by Class or Sub Class"
               onChange={handleSearch}
-              style={{ width: "300px", height: "40px", borderRadius: "5px", marginRight:5 }}
+              style={{
+                width: "200px",
+                height: "40px",
+                borderRadius: "5px",
+                marginRight: 5,
+              }}
             />
             <CustomButton
               text="Downlaod"
+              icon={<DownloadOutlined />}
               onClick={() => exportToPDF(filteredData, columns, "TableData")}
               type="rgba(0, 15, 145, 0.79)"
             />

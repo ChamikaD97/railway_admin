@@ -1,5 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { Table, Modal, Input, Card } from "antd";
+import {
+  Table,
+  Modal,
+  Input,
+  Form,
+  Button,
+  Card,
+  Select,
+  notification,
+} from "antd";
+
 import CustomButton from "../components/CustomButton";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -9,17 +19,66 @@ import { isLoading } from "../redux/authSlice";
 import ReactCountryFlag from "react-country-flag";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
+import {
+  ReloadOutlined,
+  DownloadOutlined,
+  PlusCircleOutlined,
+} from "@ant-design/icons"; // Import the icon
+const { Option } = Select;
+const { TextArea } = Input;
+
 const Engines = () => {
   const API_URL = "http://192.168.1.233:5000";
   const { engineData, search } = useSelector((state) => state.eng);
   const { loading } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
-  const [tableData, setTableData] = useState(engineData);
+  const [api, contextHolder] = notification.useNotification();
+  const openNotificationWithIcon = (type,title) => {
+    api[type]({
+      message: title,
+    });
+  };
   const [selectedRow, setSelectedRow] = useState(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [filteredData, setFilteredData] = useState(engineData);
   const navigate = useNavigate();
+  const [isAddModalVisible, setIsAddModalVisible] = useState(false);
+  const [form] = Form.useForm();
 
+  const handleAddNew = () => {
+    setIsAddModalVisible(true);
+  };
+
+  const closeAddModal = () => {
+    setIsAddModalVisible(false);
+    form.resetFields();
+  };
+
+  const handleSubmit = async (values) => {
+    try {
+      dispatch(isLoading(true));
+      // Send the data to the API
+      await axios.post(`${API_URL}/api/engines`, values, {
+        headers: { Authorization: "token" },
+      });
+
+      // Success notification or further actions
+      console.log("Data added successfully:", values);
+
+      openNotificationWithIcon("success","Engine Added Successfully");
+
+      notification.success({
+        message: "Engine Added",
+        description: "The new engine data has been successfully added!",
+      });
+      dispatch(isLoading(false));
+      closeAddModal(); // Close modal after success
+    } catch (error) {
+      dispatch(isLoading(false));
+      openNotificationWithIcon("error","Failed to Add Engine");
+      console.error("Error adding engine:", error.message);
+    }
+  };
   const columns = [
     {
       title: "Class",
@@ -36,11 +95,7 @@ const Engines = () => {
       dataIndex: "power(Hp)",
       key: "power(Hp)",
     },
-    {
-      title: "Axle Structure",
-      dataIndex: "axleStructure",
-      key: "axleStructure",
-    },
+
     {
       title: "Power Engine",
       dataIndex: "powerEngine",
@@ -60,9 +115,15 @@ const Engines = () => {
       title: "Company",
       dataIndex: "company",
       key: "company",
-    },  {
+    },
+    {
+      title: "Condition",
+      dataIndex: "condition",
+      key: "condition",
+    },
+    {
       title: "Shed",
-      dataIndex: "Shed",
+      dataIndex: "shed",
       key: "shed",
     },
   ];
@@ -94,7 +155,6 @@ const Engines = () => {
   // };
   const exportToPDF = (data, columns, fileName) => {
     const doc = new jsPDF();
-    
 
     doc.autoTable({
       head: [columns],
@@ -165,6 +225,7 @@ const Engines = () => {
               alignItems: "center",
             }}
           >
+            {contextHolder}
             <CustomButton
               text="Home"
               onClick={() => navigate("/dashboard")}
@@ -173,6 +234,7 @@ const Engines = () => {
             <CustomButton
               text="Refresh"
               onClick={fetchEngines}
+              icon={<ReloadOutlined />}
               type="rgba(145, 0, 0, 0.64)"
             />
             <CustomButton
@@ -192,17 +254,28 @@ const Engines = () => {
             }}
           >
             <Input
-            placeholder="Search..."
-            onChange={handleSearch}
-            style={{ width: "300px", height: "40px", borderRadius: "15px" }}
-          />
+              placeholder="Search..."
+              onChange={handleSearch}
+              style={{
+                width: "200px",
+                height: "40px",
+                borderRadius: "15px",
+                marginRight: "10px",
+              }}
+            />
             <CustomButton
               text="Downlaod"
+              icon={<DownloadOutlined />}
               onClick={() => exportToPDF(filteredData, columns, "TableData")}
               type="rgba(0, 15, 145, 0.79)"
             />
+            <CustomButton
+              text="Add New"
+              icon={<PlusCircleOutlined />}
+              onClick={() => handleAddNew()}
+              type="rgba(21, 155, 0, 0.79)"
+            />
           </div>
-          
         </div>
         <div
           style={{
@@ -257,7 +330,8 @@ const Engines = () => {
             </p>
 
             <p>
-              <strong>Axle Load(Weight/axcels):</strong> {selectedRow.powerEngine || "N/A"}
+              <strong>Axle Load(Weight/axcels):</strong>{" "}
+              {selectedRow.powerEngine || "N/A"}
             </p>
             <p>
               <strong>Year:</strong> {selectedRow.year || "N/A"}
@@ -279,6 +353,172 @@ const Engines = () => {
             </p>
           </div>
         )}
+      </Modal>
+      <Modal
+        title="Add New Engine"
+        visible={isAddModalVisible}
+        onCancel={closeAddModal}
+        footer={null}
+        centered
+      >
+        <Form
+          form={form}
+          layout="vertical"
+          onFinish={handleSubmit}
+          onReset={closeAddModal}
+          initialValues={{ country: "US" }} // Default values if needed
+        >
+          <Form.Item
+            label="Class"
+            name="class"
+            rules={[{ required: true, message: "Please enter the class!" }]}
+          >
+            <Input placeholder="Enter class" />
+          </Form.Item>
+
+          <Form.Item
+            label="Sub Class"
+            name="subClass"
+            rules={[{ required: true, message: "Please enter the sub-class!" }]}
+          >
+            <Input placeholder="Enter sub-class" />
+          </Form.Item>
+
+          <Form.Item
+            label="Power (Hp)"
+            name="powerHp"
+            rules={[{ required: false, message: "Please enter power (Hp)!" }]}
+          >
+            <Input placeholder="Enter power (Hp)" />
+          </Form.Item>
+
+          <Form.Item
+            label="Axle Structure"
+            name="axleStructure"
+            rules={[
+              { required: false, message: "Please enter axle structure!" },
+            ]}
+          >
+            <Input placeholder="Enter axle structure" />
+          </Form.Item>
+
+          <Form.Item
+            label="Power Engine"
+            name="powerEngine"
+            rules={[{ required: false, message: "Please enter power engine!" }]}
+          >
+            <Input placeholder="Enter power engine" />
+          </Form.Item>
+
+          <Form.Item
+            label="Year"
+            name="year"
+            rules={[
+              {
+                required: false,
+                message: "Please enter the manufacturing year!",
+              },
+            ]}
+          >
+            <Input type="number" placeholder="Enter year" />
+          </Form.Item>
+
+          <Form.Item
+            label="Country"
+            name="country"
+            rules={[{ required: false, message: "Please enter the country!" }]}
+          >
+            <Input placeholder="Enter country" />
+          </Form.Item>
+
+          <Form.Item
+            label="Company"
+            name="company"
+            rules={[
+              { required: false, message: "Please enter the company name!" },
+            ]}
+          >
+            <Input placeholder="Enter company" />
+          </Form.Item>
+          <Form.Item
+            label="Condition"
+            name="condition"
+            rules={[
+              { required: true, message: "Please select the condition!" },
+            ]}
+          >
+            <Select placeholder="Select condition">
+              <Option value="working">Working</Option>
+              <Option value="not-working">Not Working</Option>
+            </Select>
+          </Form.Item>
+          <Form.Item
+            label="Shed"
+            name="shed"
+            rules={[{ required: true, message: "Please enter the shed!" }]}
+          >
+            <Input placeholder="Enter Shed" />
+          </Form.Item>
+          <Form.Item
+            label="Specifications"
+            name="specifications"
+            rules={[
+              { required: false, message: "Please input specifications!" },
+            ]}
+          >
+            <TextArea placeholder="Enter detailed specifications" rows={4} />
+          </Form.Item>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "flex-end",
+              alignItems: "center",
+            }}
+          >
+            <Form.Item>
+              <button
+                type="submit"
+                style={{
+                  padding: "12px 20px",
+                  backgroundColor: "rgba(21, 155, 0, 0.79)",
+                  color: "#fff",
+                  border: "none",
+                  borderRadius: "12px",
+                  marginRight: "10px",
+
+                  cursor: "pointer",
+                  borderRadius: "12px",
+                  color: "#fff",
+                  border: "none",
+                  outline: "none",
+                }}
+              >
+                Submit
+              </button>
+            </Form.Item>{" "}
+            <Form.Item>
+              <button
+                type="reset"
+                style={{
+                  padding: "12px 20px",
+                  backgroundColor: "rgba(155, 0, 0, 0.79)",
+                  color: "#fff",
+                  border: "none",
+                  borderRadius: "12px",
+                  marginRight: "10px",
+
+                  cursor: "pointer",
+                  borderRadius: "12px",
+                  color: "#fff",
+                  border: "none",
+                  outline: "none",
+                }}
+              >
+                Reset
+              </button>
+            </Form.Item>
+          </div>
+        </Form>
       </Modal>
     </div>
   );
