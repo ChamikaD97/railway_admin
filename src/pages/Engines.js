@@ -23,6 +23,7 @@ import {
   ReloadOutlined,
   DownloadOutlined,
   PlusCircleOutlined,
+  MoreOutlined,
 } from "@ant-design/icons"; // Import the icon
 const { Option } = Select;
 const { TextArea } = Input;
@@ -194,7 +195,9 @@ const Engines = () => {
       console.error("Error fetching engines:", error.message);
     }
   };
-
+  const handelMore = () => {
+    navigate(`/engine/${selectedRow.subClass}`);
+  };
   useEffect(() => {
     if (!search) {
       setFilteredData(engineData);
@@ -351,6 +354,22 @@ const Engines = () => {
             <p>
               <strong>Company:</strong> {selectedRow.company || "N/A"}
             </p>
+            <div
+            style={{
+              display: "flex",
+              justifyContent: "flex-end",
+              alignItems: "center",
+            }}
+          >
+            
+          
+            <CustomButton
+              text="More"
+              icon={<MoreOutlined />}
+              onClick={() => handelMore()}
+              type="rgba(155, 119, 0, 0.79)"
+            />
+          </div>
           </div>
         )}
       </Modal>

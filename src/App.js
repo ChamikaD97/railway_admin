@@ -10,6 +10,7 @@ import Dashboard from "./pages/Dashboard";
 import Engines from "./pages/Engines";
 import Failures from "./pages/Failures";
 import EngineClasses from "./pages/Engine Classes";
+import SingleEngine from "./pages/SingleEngine";
 const App = () => {
   const [isHovering, setIsHovering] = useState(false);
 
@@ -27,6 +28,7 @@ const App = () => {
             <Route path="/enginesclasses" element={<EngineClasses />} />
             <Route path="/failures" element={<Failures />} />
             <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/engine/:subClass" element={<SingleEngine />} />
           </Routes>
           <Modal
             title={modalData.title}
