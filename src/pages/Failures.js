@@ -219,11 +219,8 @@ const Failures = () => {
               alignItems: "center",
             }}
           >
-            <CustomButton
-              text="Home"
-              onClick={() => navigate("/dashboard")}
-              type="rgba(0, 145, 102, 0.78)"
-            />
+        
+        
             <CustomButton
               text="Refresh"
               onClick={fetchEngineFailures}

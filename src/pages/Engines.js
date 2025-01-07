@@ -15,7 +15,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useSelector, useDispatch } from "react-redux";
 import { engines, enginesClasses, setSearch } from "../redux/engineSlice";
-import { isLoading } from "../redux/authSlice";
+import { isLoading, setSelectedKey } from "../redux/authSlice";
 import ReactCountryFlag from "react-country-flag";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
@@ -34,7 +34,7 @@ const Engines = () => {
   const { loading } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
   const [api, contextHolder] = notification.useNotification();
-  const openNotificationWithIcon = (type,title) => {
+  const openNotificationWithIcon = (type, title) => {
     api[type]({
       message: title,
     });
@@ -61,12 +61,9 @@ const Engines = () => {
       // Send the data to the API
       await axios.post(`${API_URL}/api/engines`, values, {
         headers: { Authorization: "token" },
-      });
+      });  
 
-      // Success notification or further actions
-      console.log("Data added successfully:", values);
-
-      openNotificationWithIcon("success","Engine Added Successfully");
+      openNotificationWithIcon("success", "Engine Added Successfully");
 
       notification.success({
         message: "Engine Added",
@@ -76,7 +73,7 @@ const Engines = () => {
       closeAddModal(); // Close modal after success
     } catch (error) {
       dispatch(isLoading(false));
-      openNotificationWithIcon("error","Failed to Add Engine");
+      openNotificationWithIcon("error", "Failed to Add Engine");
       console.error("Error adding engine:", error.message);
     }
   };
@@ -229,11 +226,7 @@ const Engines = () => {
             }}
           >
             {contextHolder}
-            <CustomButton
-              text="Home"
-              onClick={() => navigate("/dashboard")}
-              type="rgba(0, 145, 102, 0.78)"
-            />
+
             <CustomButton
               text="Refresh"
               onClick={fetchEngines}
@@ -242,7 +235,10 @@ const Engines = () => {
             />
             <CustomButton
               text="Engine Classes"
-              onClick={() => navigate("/enginesClasses")}
+              onClick={() => {
+                dispatch(setSelectedKey("2"));
+                navigate("/enginesClasses");
+              }}
               type="rgba(0, 0, 0, 0.78)"
             />
           </div>
@@ -355,21 +351,19 @@ const Engines = () => {
               <strong>Company:</strong> {selectedRow.company || "N/A"}
             </p>
             <div
-            style={{
-              display: "flex",
-              justifyContent: "flex-end",
-              alignItems: "center",
-            }}
-          >
-            
-          
-            <CustomButton
-              text="More"
-              icon={<MoreOutlined />}
-              onClick={() => handelMore()}
-              type="rgba(155, 119, 0, 0.79)"
-            />
-          </div>
+              style={{
+                display: "flex",
+                justifyContent: "flex-end",
+                alignItems: "center",
+              }}
+            >
+              <CustomButton
+                text="More"
+                icon={<MoreOutlined />}
+                onClick={() => handelMore()}
+                type="rgba(155, 119, 0, 0.79)"
+              />
+            </div>
           </div>
         )}
       </Modal>

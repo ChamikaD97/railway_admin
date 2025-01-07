@@ -7,11 +7,8 @@ import { useSelector, useDispatch } from "react-redux";
 import { engines, enginesClasses, setSearch } from "../redux/engineSlice";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
-
-import {
-  ReloadOutlined,
-  DownloadOutlined,
-} from "@ant-design/icons"; // Import the icon
+import { setSelectedKey } from "../redux/authSlice";
+import { ReloadOutlined, DownloadOutlined } from "@ant-design/icons"; // Import the icon
 
 const EngineClasses = () => {
   const API_URL =
@@ -105,11 +102,6 @@ const EngineClasses = () => {
             }}
           >
             <CustomButton
-              text="Home"
-              onClick={() => navigate("/dashboard")}
-              type="rgba(0, 145, 102, 0.78)"
-            />
-            <CustomButton
               text="Refresh"
               icon={<ReloadOutlined />}
               onClick={fetchEngines}
@@ -117,7 +109,10 @@ const EngineClasses = () => {
             />
             <CustomButton
               text="Engines"
-              onClick={() => navigate("/engines")}
+              onClick={() => {
+                dispatch(setSelectedKey("3"));
+                navigate("/engines");
+              }}
               type="rgba(0, 0, 0, 0.78)"
             />
           </div>
