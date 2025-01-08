@@ -14,7 +14,7 @@ import axios from "axios";
 import { useSelector, useDispatch } from "react-redux";
 
 import { isLoading } from "../redux/authSlice";
-
+import {API_URL_HOSTED} from '../var'
 const Failures = () => {
   const {
     engineFailuresData,
@@ -41,7 +41,7 @@ const Failures = () => {
         return "gray";
     }
   };
-  const API_URL = "http://192.168.1.233:5000";
+   const API_URL = "http://13.60.98.221:5000";
   const fetchEngineFailures = async () => {
     try {
       // const token = await AsyncStorage.getItem("token");

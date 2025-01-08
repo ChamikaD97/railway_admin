@@ -12,17 +12,16 @@ const MainLayout = ({ children }) => {
   return (
     <Layout className="layout">
      <Navbar/>
-     
       <div
         style={{
-          height: "100vh", // Full viewport height
+        
           backgroundImage: `url(${backgroundN})`,
           backgroundSize: "cover", // Ensures the image covers the entire div
           backgroundPosition: "center", // Centers the image
         }}
       >
-        <Layout style={{ padding: "0 30px", marginTop: 10, backgroundColor:'transparent' }}>
-          <Content style={{ padding: "24px 0", minHeight: 280 }}>
+        <Layout style={{ padding: "0 10px", backgroundColor:'transparent' }}>
+          <Content style={{ padding: "10px 0", minHeight: 280 }}>
             {children}
           </Content>
         </Layout>

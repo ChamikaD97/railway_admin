@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 
 import "../App.css"; // Import the CSS file
-import { Row, Col, Modal, Badge } from "antd";
+import { Row, Col, Modal, Badge, Typography } from "antd";
 import DashboardEngineCard from "../sections/DashboardEngineCard";
 import { isLoading } from "../redux/authSlice";
 import { useSelector, useDispatch } from "react-redux";
@@ -25,7 +25,9 @@ const Dashboard = () => {
   const dispatch = useDispatch();
   const { loading } = useSelector((state) => state.auth);
   const navigate = useNavigate();
-  const API_URL = "http://192.168.1.233:5000";
+  const API_URL = "http://13.60.98.221:5000";
+  const { Title } = Typography;
+
   const fetchEngines = async () => {
     try {
       // const token = await AsyncStorage.getItem("token");
@@ -127,6 +129,28 @@ const Dashboard = () => {
     <div>
       {!loading ? (
         <div style={{ minHeight: 360, zIndex: 2, position: "relative" }}>
+          <Typography.Title level={6} style={{ margin: 5, color: "white" }}>
+            most recent failures
+          </Typography.Title>
+          <Typography.Title level={6} style={{ margin: 5, color: "white" }}>
+            all failures apone the engine Classes
+          </Typography.Title>
+
+          <Typography.Title level={6} style={{ margin: 5, color: "white" }}>
+           failure completed delays
+          </Typography.Title>
+          <Typography.Title level={6} style={{ margin: 5, color: "white" }}>
+            category wise 
+        wipers/lights
+          </Typography.Title>
+          
+          <Typography.Title level={6} style={{ margin: 5, color: "white" }}>
+           engine list with failure count
+          </Typography.Title>
+          <Typography.Title level={6} style={{ margin: 5, color: "white" }}>
+            category wise 
+            wipers/lights
+          </Typography.Title>
           <Row gutter={25} style={{ marginBottom: 15 }}>
             <Col span={8}>
               <div>

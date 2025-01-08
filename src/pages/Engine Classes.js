@@ -11,8 +11,7 @@ import { setSelectedKey } from "../redux/authSlice";
 import { ReloadOutlined, DownloadOutlined } from "@ant-design/icons"; // Import the icon
 
 const EngineClasses = () => {
-  const API_URL =
-    "http://ec2-13-61-34-101.eu-north-1.compute.amazonaws.com:5000";
+  const API_URL =  "http://13.60.98.221:5000";
   const { enginesClasses, search } = useSelector((state) => state.eng);
   const { loading } = useSelector((state) => state.auth);
   const dispatch = useDispatch();

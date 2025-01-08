@@ -40,10 +40,11 @@
 .card {
 
   width: auto;
-  background-color: rgba(231, 231, 231, 0.85);
+  background-color: rgba(0, 21, 41, 0.856);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   animation: fadeIn 1s ease-out forwards; /* Apply fade-in animation */
   height: auto;
+  border-color: rgba(0, 21, 41, 0.856);
   border-radius: 5;
 }
 
@@ -59,6 +60,6 @@
 .card:hover {
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   transform: scale(1.05); /* Enlarge the card */
-  background-color: rgba(231, 231, 231, 0.9);
+  background-color: rgba(0, 21, 41, 0.911);
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5); /* Add shadow for better effect */
 }

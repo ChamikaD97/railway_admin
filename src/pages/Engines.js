@@ -9,7 +9,6 @@ import {
   Select,
   notification,
 } from "antd";
-
 import CustomButton from "../components/CustomButton";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -29,7 +28,6 @@ const { Option } = Select;
 const { TextArea } = Input;
 
 const Engines = () => {
-  const API_URL = "http://192.168.1.233:5000";
   const { engineData, search } = useSelector((state) => state.eng);
   const { loading } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
@@ -54,7 +52,7 @@ const Engines = () => {
     setIsAddModalVisible(false);
     form.resetFields();
   };
-
+  const API_URL =  "http://13.60.98.221:5000";
   const handleSubmit = async (values) => {
     try {
       dispatch(isLoading(true));
@@ -178,7 +176,7 @@ const Engines = () => {
       // const token = await AsyncStorage.getItem("token");
       // if (!token) return     navigate('/dashboard');
       dispatch(isLoading(true));
-      const engineRes = await axios.get(`${API_URL}/api/engines`, {
+      const engineRes = await axios.get(`${process.env.API_URL}/api/engines`, {
         headers: { Authorization: "token" },
       });
 
