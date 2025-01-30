@@ -1,25 +1,25 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Table, Modal, Input, Card } from "antd";
 import CustomButton from "../components/CustomButton";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useSelector, useDispatch } from "react-redux";
 import { engines, enginesClasses, setSearch } from "../redux/engineSlice";
-import { isLoading } from "../redux/authSlice";
+import { isLoading, setSelectedKey } from "../redux/authSlice";
 import ReactCountryFlag from "react-country-flag";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
 const Engines = () => {
-  const API_URL = "http://192.168.1.233:5000";
+  const API_URL = "http://13.61.26.58:5000";
   const { engineData, search } = useSelector((state) => state.eng);
-  const { loading } = useSelector((state) => state.auth);
+  const { loading, token } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
   const [tableData, setTableData] = useState(engineData);
   const [selectedRow, setSelectedRow] = useState(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [filteredData, setFilteredData] = useState(engineData);
   const navigate = useNavigate();
-
+  const inputRef = useRef(null);
   const columns = [
     {
       title: "Class",
@@ -60,7 +60,8 @@ const Engines = () => {
       title: "Company",
       dataIndex: "company",
       key: "company",
-    },  {
+    },
+    {
       title: "Shed",
       dataIndex: "Shed",
       key: "shed",
@@ -94,7 +95,6 @@ const Engines = () => {
   // };
   const exportToPDF = (data, columns, fileName) => {
     const doc = new jsPDF();
-    
 
     doc.autoTable({
       head: [columns],
@@ -115,13 +115,15 @@ const Engines = () => {
 
   const fetchEngines = async () => {
     dispatch(setSearch());
-
+    if (inputRef.current) {
+      inputRef.current.input.value = ""; // Clear input field
+    }
     try {
       // const token = await AsyncStorage.getItem("token");
       // if (!token) return     navigate('/dashboard');
       dispatch(isLoading(true));
       const engineRes = await axios.get(`${API_URL}/api/engines`, {
-        headers: { Authorization: "token" },
+        headers: { Authorization: token },
       });
 
       dispatch(engines(engineRes.data));
@@ -166,8 +168,12 @@ const Engines = () => {
             }}
           >
             <CustomButton
-              text="Home"
-              onClick={() => navigate("/dashboard")}
+              text={"Home"}
+              onClick={() => {
+                dispatch(setSelectedKey("1"));
+
+                navigate("/dashboard");
+              }}
               type="rgba(0, 145, 102, 0.78)"
             />
             <CustomButton
@@ -177,12 +183,16 @@ const Engines = () => {
             />
             <CustomButton
               text="Engine Classes"
-              onClick={() => navigate("/enginesClasses")}
+              onClick={() => {
+                dispatch(setSelectedKey("3"));
+
+                navigate("/enginesclasses");
+              }}
               type="rgba(0, 0, 0, 0.78)"
             />
           </div>
           <h2 style={{ margin: 0 }} onClick={() => setFilteredData(engineData)}>
-            Engine Details
+            Engine Details{search}
           </h2>
           <div
             style={{
@@ -192,17 +202,18 @@ const Engines = () => {
             }}
           >
             <Input
-            placeholder="Search..."
-            onChange={handleSearch}
-            style={{ width: "300px", height: "40px", borderRadius: "15px" }}
-          />
+              placeholder="Search..."
+              onChange={handleSearch}
+              allowClear
+              ref={inputRef}
+              style={{ width: "300px", height: "40px", borderRadius: "15px" }}
+            />
             <CustomButton
               text="Downlaod"
               onClick={() => exportToPDF(filteredData, columns, "TableData")}
               type="rgba(0, 15, 145, 0.79)"
             />
           </div>
-          
         </div>
         <div
           style={{
@@ -257,7 +268,8 @@ const Engines = () => {
             </p>
 
             <p>
-              <strong>Axle Load(Weight/axcels):</strong> {selectedRow.powerEngine || "N/A"}
+              <strong>Axle Load(Weight/axcels):</strong>{" "}
+              {selectedRow.powerEngine || "N/A"}
             </p>
             <p>
               <strong>Year:</strong> {selectedRow.year || "N/A"}

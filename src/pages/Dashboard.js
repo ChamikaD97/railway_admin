@@ -6,7 +6,6 @@ import { Row, Col, Modal, Badge } from "antd";
 import DashboardEngineCard from "../sections/DashboardEngineCard";
 import { isLoading } from "../redux/authSlice";
 import { useSelector, useDispatch } from "react-redux";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import { engines, enginesClasses, setSearch } from "../redux/engineSlice";
 import {
@@ -23,28 +22,25 @@ import DashboardEngineClassesCard from "../sections/DashboardEngineClassesCard";
 import Loader from "../components/Loader";
 const Dashboard = () => {
   const dispatch = useDispatch();
-  const { loading } = useSelector((state) => state.auth);
+  const { loading, token } = useSelector((state) => state.auth);
   const navigate = useNavigate();
-  const API_URL = "http://192.168.1.233:5000";
+  const API_URL = "http://13.61.26.58:5000";
+  const { selectedKey } = useSelector((state) => state.auth);
   const fetchEngines = async () => {
     try {
       // const token = await AsyncStorage.getItem("token");
       // if (!token) return     navigate('/dashboard');
 
       const engineRes = await axios.get(`${API_URL}/api/engines`, {
-        headers: { Authorization: "token" },
+        headers: { Authorization: token },
       });
-      const classCounts = engineRes.data.reduce((acc, item) => {
-        acc[item.class] = (acc[item.class] || 0) + 1;
-        return acc;
-      }, {});
-      const classCountsArray = Object.entries(classCounts).map(
-        ([className, count]) => ({
-          className,
-          count,
-        })
-      );
-      dispatch(enginesClasses(classCountsArray));
+
+      const classEnginesData = await axios.get(`${API_URL}/api/classEngines`, {
+        headers: {
+          Authorization: token, // Include token if required
+        },
+      });
+      dispatch(enginesClasses(classEnginesData.data));
       dispatch(engines(engineRes.data));
     } catch (error) {
       console.error("Error fetching engines:", error.message);
@@ -52,11 +48,8 @@ const Dashboard = () => {
   };
   const fetchFailures = async () => {
     try {
-      const token = await AsyncStorage.getItem("token");
-      // if (!token) return navigation.navigate("Login");
-
       const failures = await axios.get(`${API_URL}/api/failures`, {
-        headers: { Authorization: "token" },
+        headers: { Authorization: token },
       });
       dispatch(failures(failures.data));
     } catch (error) {
@@ -69,15 +62,14 @@ const Dashboard = () => {
       // const u = JSON.parse(loggedUser);
       // const token = await AsyncStorage.getItem("token");
       // if (!token) return navigation.navigate("Login");
-
-      const id = await AsyncStorage.getItem("failureId");
-      const response = await axios.get(
-        `${API_URL}/api/engineFailures/engineFailureById`,
-        {
-          // headers: { Authorization: token },
-          params: { id },
-        }
-      );
+      // const id = await AsyncStorage.getItem("failureId");
+      // const response = await axios.get(
+      //   `${API_URL}/api/engineFailures/engineFailureById`,
+      //   {
+      //     // headers: { Authorization: token },
+      //     params: { id },
+      //   }
+      // );
     } catch (error) {
       console.error("Error fetching engineFailures:", error.message);
     } finally {
@@ -91,7 +83,7 @@ const Dashboard = () => {
       // if (!token) return navigation.navigate("Login");
 
       const efDta = await axios.get(`${API_URL}/api/engineFailures`, {
-        headers: { Authorization: "token" },
+        headers: { Authorization: token },
       });
 
       dispatch(engineFailures(efDta.data));

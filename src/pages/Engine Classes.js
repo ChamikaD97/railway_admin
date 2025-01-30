@@ -7,11 +7,12 @@ import { useSelector, useDispatch } from "react-redux";
 import { engines, enginesClasses, setSearch } from "../redux/engineSlice";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
+import { setSelectedKey } from "../redux/authSlice";
 
 const EngineClasses = () => {
-  const API_URL = "http://ec2-13-61-34-101.eu-north-1.compute.amazonaws.com:5000";
+  const API_URL = "http://13.61.26.58:5000";
   const { enginesClasses, search } = useSelector((state) => state.eng);
-  const { loading } = useSelector((state) => state.auth);
+  const { loading, token } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
   const [tableData, setTableData] = useState(enginesClasses);
   const [filteredData, setFilteredData] = useState(enginesClasses);
@@ -20,18 +21,40 @@ const EngineClasses = () => {
   const columns = [
     {
       title: "Engine Class",
-      dataIndex: "className",
-      key: "className",
+      dataIndex: "type",
+      key: "type",
+    },
+    {
+      title: "Year",
+      dataIndex: "year",
+      key: "year",
+    },
+    {
+      title: "Country",
+      dataIndex: "country",
+      key: "country",
     },
     {
       title: "Number of Engines",
-      dataIndex: "count",
-      key: "count",
+      dataIndex: "num",
+      key: "num",
+    },
+    {
+      title: "Axle Structure",
+      dataIndex: "axleStructure",
+      key: "axleStructure",
+    },
+    {
+      title: "Power Engine",
+      dataIndex: "powerEngine",
+      key: "powerEngine",
     },
   ];
 
   const handleRowClick = (record) => {
-    dispatch(setSearch(record.className));
+    console.log(record);
+    
+    dispatch(setSearch(record.class));
     navigate("/engines");
   };
 
@@ -41,32 +64,23 @@ const EngineClasses = () => {
       setFilteredData(enginesClasses);
       return;
     }
+    // const filtered = tableData.filter((item) =>
+    //   item.className?.toLowerCase().includes(value)
+    // );
     const filtered = tableData.filter((item) =>
-      item.className?.toLowerCase().includes(value)
+      Object.values(item).join(" ").toLowerCase().includes(value)
     );
     setFilteredData(filtered);
   };
 
   const fetchEngines = async () => {
     try {
-      // const token = await AsyncStorage.getItem("token");
-      // if (!token) return     navigate('/dashboard');
-
-      const engineRes = await axios.get(`${API_URL}/api/engines`, {
-        headers: { Authorization: "token" },
+      const classEnginesData = await axios.get(`${API_URL}/api/classEngines`, {
+        headers: {
+          Authorization: token, // Include token if required
+        },
       });
-      const classCounts = engineRes.data.reduce((acc, item) => {
-        acc[item.class] = (acc[item.class] || 0) + 1;
-        return acc;
-      }, {});
-      const classCountsArray = Object.entries(classCounts).map(
-        ([className, count]) => ({
-          className,
-          count,
-        })
-      );
-      dispatch(enginesClasses(classCountsArray));
-      dispatch(engines(engineRes.data));
+      dispatch(enginesClasses(classEnginesData.data));
     } catch (error) {
       console.error("Error fetching engines:", error.message);
     }
@@ -99,8 +113,12 @@ const EngineClasses = () => {
             }}
           >
             <CustomButton
-              text="Home"
-              onClick={() => navigate("/dashboard")}
+              text={"Home"}
+              onClick={() => {
+                dispatch(setSelectedKey('1'));
+
+                navigate("/dashboard");
+              }}
               type="rgba(0, 145, 102, 0.78)"
             />
             <CustomButton
@@ -110,7 +128,11 @@ const EngineClasses = () => {
             />
             <CustomButton
               text="Engines"
-              onClick={() => navigate("/engines")}
+              onClick={() => {
+                dispatch(setSelectedKey('2'));
+
+                navigate("/engines");
+              }}
               type="rgba(0, 0, 0, 0.78)"
             />
           </div>
@@ -130,7 +152,7 @@ const EngineClasses = () => {
             <Input
               placeholder="Search by Class or Sub Class"
               onChange={handleSearch}
-              style={{ width: "300px", height: "40px", borderRadius: "5px", marginRight:5 }}
+              style={{ width: "300px", height: "40px", borderRadius: "15px" }}
             />
             <CustomButton
               text="Downlaod"

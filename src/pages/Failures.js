@@ -41,7 +41,7 @@ const Failures = () => {
         return "gray";
     }
   };
-  const API_URL = "http://192.168.1.233:5000";
+  const API_URL = "http://13.61.26.58:5000";
   const fetchEngineFailures = async () => {
     try {
       // const token = await AsyncStorage.getItem("token");

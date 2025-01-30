@@ -4,6 +4,8 @@ const initialState = {
   isAuthenticated: false,
   user: null,
   loading: false,
+  token:null,
+  selectedKey:'1',
 };
 
 const authSlice = createSlice({
@@ -25,8 +27,14 @@ const authSlice = createSlice({
     isLoading(state, action) {
       state.loading = action.payload;
     },
+    userToken(state, action) {
+      state.token = action.payload;
+    },
+    setSelectedKey(state, action) {
+      state.selectedKey = action.payload;
+    },
   },
 });
 
-export const { login, logout, register,isLoading } = authSlice.actions;
+export const { login, logout, register,isLoading,userToken,setSelectedKey } = authSlice.actions;
 export default authSlice.reducer;

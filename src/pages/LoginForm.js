@@ -1,26 +1,45 @@
-import React from "react";
+import React, { useState } from "react";
 import { Form, Input, Button, Checkbox, message, Flex } from "antd";
 import { useDispatch } from "react-redux";
-import { login } from "../redux/authSlice";
+import { login, userToken } from "../redux/authSlice";
 import CenteredCard from "../components/CenteredCard";
 import CustomButton from "../components/CustomButton";
+import { ToastContainer, toast } from "react-toastify";
 
 import { LockFilled, LockOutlined, UserOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const LoginForm = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const handleRegister = () => {
-    navigate('/register')
-
+    navigate("/register");
   };
-  
+  const [isLoading, setIsLoading] = useState(false);
+  const API_URL = "http://13.61.26.58:5000";
+  const handleLogin = async () => {
+    try {
+      const response = await axios.post(`${API_URL}/api/user/login`, {
+        comNum: "Admin",
+        password: "Admin",
+      });
 
-  const handleLogin = () => {
-    const userData = { username:'u', password :'p'};
-    dispatch(login(userData));
-    navigate('/dashboard')
+      if (response.status === 200) {
+        dispatch(login(response.data.user));
+        dispatch(userToken(response.data.token));
+        setIsLoading(false);
+
+        navigate("/dashboard");
+      } else if (response.status === 401) {
+        navigate("/");
+      } else if (response.status === 404) {
+      } else if (response.status === 201) {
+      } else {
+      }
+    } catch (error) {
+      setIsLoading(false);
+    }
   };
   return (
     <div
@@ -75,6 +94,7 @@ const LoginForm = () => {
             type="rgba(53, 145, 0, 0.78)"
           />
         </Flex>
+        <ToastContainer />
       </CenteredCard>
     </div>
   );
