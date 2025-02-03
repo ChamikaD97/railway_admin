@@ -8,6 +8,7 @@ import Dashboard from "./pages/Dashboard";
 import Engines from "./pages/Engines";
 import Failures from "./pages/Failures";
 import EngineClasses from "./pages/Engine Classes";
+import Trips from "./pages/Trips";
 
 const App = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -22,6 +23,7 @@ const App = () => {
           <Route path="/engines" element={<Engines />} />
           <Route path="/enginesclasses" element={<EngineClasses />} />
           <Route path="/failures" element={<Failures />} />
+          <Route path="/trips" element={<Trips />} />
           <Route path="/dashboard" element={<Dashboard />} />
         </Routes>
         <Modal

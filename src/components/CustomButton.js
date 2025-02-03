@@ -2,6 +2,7 @@ import React from "react";
 import { Spin } from "antd";
 import { LoadingOutlined } from "@ant-design/icons"; // Optional: Add a custom loading spinner
 import { ReloadOutlined } from "@ant-design/icons"; // Import the icon
+import { TrainOutlined } from "@mui/icons-material";
 
 // Custom button component
 const CustomButton = ({
@@ -22,12 +23,13 @@ const CustomButton = ({
     padding: size === "large" ? "12px 20px" : "8px 16px",
     fontSize: size === "large" ? "16px" : "14px",
     cursor: "pointer",
-    borderRadius: "4px",
+    borderRadius: "12px",
     backgroundColor: type,
     color: "#fff",
     border: "none",
     marginRight:'8px',
     outline: "none",
+    
     
     ...style, // Allow additional styles to be passed
   };

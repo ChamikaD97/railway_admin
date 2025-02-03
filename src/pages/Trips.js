@@ -15,7 +15,7 @@ import { useSelector, useDispatch } from "react-redux";
 
 import { isLoading } from "../redux/authSlice";
 import {API_URL_HOSTED} from '../var'
-const Failures = () => {
+const Trips = () => {
   const {
     engineFailuresData,
     completedEngineFailureData,
@@ -24,7 +24,7 @@ const Failures = () => {
   } = useSelector((state) => state.engFail);
   const [filteredData, setFilteredData] = useState(engineFailuresData);
   const [selectedRow, setSelectedRow] = useState(null);
-  const [name, setName] = useState("LOCO FAILURES");
+  const [name, setName] = useState("TRIPS");
   const [isModalVisible, setIsModalVisible] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -47,7 +47,7 @@ const Failures = () => {
       // const token = await AsyncStorage.getItem("token");
       // if (!token) return navigation.navigate("Login");
 
-      const efDta = await axios.get(`${API_URL}/api/engineFailures`, {
+      const efDta = await axios.get(`${API_URL}/api/tripCards`, {
         headers: { Authorization: "token" },
       });
 
@@ -99,9 +99,9 @@ const Failures = () => {
   };
   const columns = [
     {
-      title: "Engine",
-      dataIndex: "engine",
-      key: "engine",
+      title: "date",
+      dataIndex: "date",
+      key: "date",
     },
     {
       title: "Driver",
@@ -354,4 +354,4 @@ const Failures = () => {
   );
 };
 
-export default Failures;
+export default Trips;

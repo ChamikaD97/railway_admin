@@ -69,6 +69,9 @@ const HeaderComponent = () => {
         <Menu.Item key="4" icon={<Warning fontSize="35" />}>
           <Link to="/failures">Failures</Link>
         </Menu.Item>
+        <Menu.Item key="6" icon={<Warning fontSize="35" />}>
+          <Link to="/trips">Trips</Link>
+        </Menu.Item>
         <Menu.Item key="5" icon={<Notifications />}>
           <Link to="/notifications">Notifications</Link>
         </Menu.Item>
