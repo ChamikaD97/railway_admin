@@ -22,7 +22,7 @@ const App = () => {
     <Router>
       <MainLayout>
         <Routes>
-          <Route path="/" element={<LoginForm />} />
+          <Route path="/" element={<Dashboard />} />
           <Route path="/register" element={<RegistrationForm />} />
           <Route path="/engines" element={<Engines />} />
           <Route path="/enginesclasses" element={<EngineClasses />} />
