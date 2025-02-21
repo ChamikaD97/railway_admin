@@ -12,7 +12,7 @@ const SingleEngine = () => {
   const navigate = useNavigate();
   const [engine, setEngine] = useState(null);
   const [loading, setLoading] = useState(false);
-  const API_URL =  "http://13.60.98.221:5000";
+  const API_URL =  "http://13.61.26.58:5000";
 
   useEffect(() => {
     const fetchEngine = async () => {

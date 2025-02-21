@@ -24,6 +24,7 @@ import {
   PlusCircleOutlined,
   MoreOutlined,
 } from "@ant-design/icons"; // Import the icon
+import { CleanHands, CleanHandsOutlined, TrainOutlined } from "@mui/icons-material";
 const { Option } = Select;
 const { TextArea } = Input;
 
@@ -52,14 +53,14 @@ const Engines = () => {
     setIsAddModalVisible(false);
     form.resetFields();
   };
-  const API_URL =  "http://13.60.98.221:5000";
+  const API_URL =  "http://13.61.26.58:5000";
   const handleSubmit = async (values) => {
     try {
       dispatch(isLoading(true));
       // Send the data to the API
       await axios.post(`${API_URL}/api/engines`, values, {
         headers: { Authorization: "token" },
-      });  
+      });
 
       openNotificationWithIcon("success", "Engine Added Successfully");
 
@@ -134,21 +135,6 @@ const Engines = () => {
     setSelectedRow(null);
   };
 
-  // const handleSearch = (event) => {
-  //   const value = event.target.value.toLowerCase();
-  //   if (!value) {
-  //     setFilteredData(engineData);
-  //     return;
-  //   }
-  //   console.log(value);
-
-  //   const filtered = tableData.filter(
-  //     (item) =>
-  //       item.class?.toLowerCase().includes(value) ||
-  //       item.subClass?.toLowerCase().includes(value)
-  //   );
-  //   setFilteredData(filtered);
-  // };
   const exportToPDF = (data, columns, fileName) => {
     const doc = new jsPDF();
 
@@ -171,14 +157,11 @@ const Engines = () => {
 
   const fetchEngines = async () => {
     dispatch(setSearch());
-    if (inputRef.current) {
-      inputRef.current.input.value = ""; // Clear input field
-    }
     try {
       // const token = await AsyncStorage.getItem("token");
       // if (!token) return     navigate('/dashboard');
       dispatch(isLoading(true));
-      const engineRes = await axios.get(`${process.env.API_URL}/api/engines`, {
+      const engineRes = await axios.get(`${API_URL}/api/engines`, {
         headers: { Authorization: "token" },
       });
 
@@ -236,14 +219,15 @@ const Engines = () => {
             <CustomButton
               text="Engine Classes"
               onClick={() => {
-                dispatch(setSelectedKey("2"));
-                navigate("/enginesClasses");
+                dispatch(setSelectedKey("3"));
+                navigate("/enginesclasses");
               }}
               type="rgba(0, 0, 0, 0.78)"
             />
           </div>
+          
           <h2 style={{ margin: 0 }} onClick={() => setFilteredData(engineData)}>
-            Engine Details{search}
+            Engine Details -{filteredData ?  filteredData.length: 0}
           </h2>
           <div
             style={{
@@ -253,8 +237,10 @@ const Engines = () => {
             }}
           >
             <Input
-              placeholder="Search..."
+              placeholder="Search"
+              onClear={()=>setFilteredData(engineData)}
               onChange={handleSearch}
+              allowClear={true}
               style={{
                 width: "200px",
                 height: "40px",
@@ -262,6 +248,7 @@ const Engines = () => {
                 marginRight: "10px",
               }}
             />
+            
             <CustomButton
               text="Downlaod"
               icon={<DownloadOutlined />}

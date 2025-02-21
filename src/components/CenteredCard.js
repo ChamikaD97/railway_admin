@@ -21,7 +21,7 @@ const CenteredCard = ({ title, style, children }) => {
         style={{
          
         
-          backgroundColor:"rgba(255, 255, 255, 0.8)",
+          backgroundColor:"rgb(255, 255, 255)",
           boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
         }}
       >

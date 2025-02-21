@@ -3,45 +3,47 @@ import React, { useEffect, useState } from "react";
 import "../App.css"; // Import the CSS file
 import CardComponent from "../components/CardComponet";
 
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { setSelectedKey } from "../redux/authSlice";
-import axios from "axios";
+import axios, { Axios } from "axios";
+const TripCard = () => {
 
-const FailureCard = () => {
-  const [failuresCount, setFailures] = useState(0);
   const API_URL = "http://13.61.26.58:5000";
-
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const [tripsCount, setTrips] = useState(0);
 
-  const fetchEngineFailures = async () => {
+  const fetchTripCards = async () => {
     try {
-      const efData = await axios.get(`${API_URL}/api/engineFailures`, {
-        headers: { Authorization: 'token' },
+
+      const trips = await axios.get(`${API_URL}/api/tripCards`, {
+        headers: { Authorization: "token" },
       });
-      setFailures(efData.data.length);
+      setTrips(trips.data.length);
+
+
     } catch (error) {
-      console.error("Error fetching engineFailures:", error.message);
+      console.error("Error fetching trip Cards:", error.message);
     }
   };
   useEffect(() => {
-    fetchEngineFailures();
+    fetchTripCards();
   }, []);
+
   const handleOnClick = () => {
-    dispatch(setSelectedKey("4"));
-    navigate("/failures");
+    dispatch(setSelectedKey("5"));
   };
 
   return (
     <div>
       <CardComponent
+        val={tripsCount}
         onCardClick={handleOnClick}
-        title={"Failures"}
-        val={failuresCount}
+        title={"Trips"}
       ></CardComponent>
     </div>
   );
 };
 
-export default FailureCard;
+export default TripCard;

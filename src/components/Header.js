@@ -6,6 +6,7 @@ import {
   TrainSharp,
   Warning,
   Notifications,
+  VerifiedUserOutlined,
 } from "@mui/icons-material";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
@@ -26,7 +27,8 @@ const HeaderComponent = () => {
       "/engines": "2",
       "/enginesclasses": "3",
       "/failures": "4",
-      "/notifications": "5",
+      "/trips": "5",
+      "/users": "6"
     };
     dispatch(setSelectedKey(pathToKey[location.pathname] || "0"));
   }, [location.pathname, dispatch]);
@@ -69,13 +71,17 @@ const HeaderComponent = () => {
         <Menu.Item key="4" icon={<Warning fontSize="35" />}>
           <Link to="/failures">Failures</Link>
         </Menu.Item>
-        <Menu.Item key="5" icon={<Notifications />}>
-          <Link to="/notifications">Notifications</Link>
+        <Menu.Item key="5" icon={<Warning fontSize="35" />}>
+          <Link to="/trips">Trips</Link>
         </Menu.Item>
-        
+        <Menu.Item key="6" icon={<VerifiedUserOutlined fontSize="35" />}>
+          <Link to="/users">Drivers</Link>
+        </Menu.Item>
+       
+      
         {/* Logout Menu Item - Floating to the right */}
         <Menu.Item
-          key="6"
+          key="8"
           icon={<Notifications />}
           onClick={handleLogout}
           style={{
