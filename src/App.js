@@ -8,6 +8,11 @@ import Dashboard from "./pages/Dashboard";
 import Engines from "./pages/Engines";
 import Failures from "./pages/Failures";
 import EngineClasses from "./pages/Engine Classes";
+import Trips from "./pages/Trips";
+import Users from "./pages/Users";
+import SelectedUser from "./pages/SelectedUser";
+import SelectedEngine from "./pages/SelectedEngine";
+import SingleTrip from "./pages/SingleTrip";
 
 const App = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -22,7 +27,14 @@ const App = () => {
           <Route path="/engines" element={<Engines />} />
           <Route path="/enginesclasses" element={<EngineClasses />} />
           <Route path="/failures" element={<Failures />} />
+          <Route path="/trips" element={<Trips />} />
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/users" element={<Users />} />
+          <Route path="/engine/:subClass" element={<SelectedEngine />} />
+          <Route path="/user/:comNum" element={<SelectedUser />} />
+           <Route path="/trip/:Id" element={<SingleTrip />} />
+
+          
         </Routes>
         <Modal
           title={modalData.title}

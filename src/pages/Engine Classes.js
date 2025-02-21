@@ -8,7 +8,12 @@ import { engines, enginesClasses, setSearch } from "../redux/engineSlice";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
 import { setSelectedKey } from "../redux/authSlice";
-
+import {
+  ReloadOutlined,
+  DownloadOutlined,
+  PlusCircleOutlined,
+  MoreOutlined,
+} from "@ant-design/icons"; // Import the icon
 const EngineClasses = () => {
   const API_URL = "http://13.61.26.58:5000";
   const { enginesClasses, search } = useSelector((state) => state.eng);
@@ -53,7 +58,7 @@ const EngineClasses = () => {
 
   const handleRowClick = (record) => {
     console.log(record);
-    
+
     dispatch(setSearch(record.class));
     navigate("/engines");
   };
@@ -97,7 +102,7 @@ const EngineClasses = () => {
   return (
     <div>
       <Card>
-        <div
+      <div
           style={{
             display: "flex",
             justifyContent: "space-between",
@@ -112,27 +117,21 @@ const EngineClasses = () => {
               alignItems: "center",
             }}
           >
-            <CustomButton
-              text={"Home"}
-              onClick={() => {
-                dispatch(setSelectedKey('1'));
-
-                navigate("/dashboard");
-              }}
-              type="rgba(0, 145, 102, 0.78)"
-            />
+            
             <CustomButton
               text="Refresh"
               onClick={fetchEngines}
+              icon={<ReloadOutlined />}
               type="rgba(145, 0, 0, 0.78)"
             />
             <CustomButton
               text="Engines"
               onClick={() => {
-                dispatch(setSelectedKey('2'));
+                dispatch(setSelectedKey("2"));
 
                 navigate("/engines");
-              }}
+              }} 
+              
               type="rgba(0, 0, 0, 0.78)"
             />
           </div>
@@ -142,6 +141,7 @@ const EngineClasses = () => {
           >
             Engine Classes
           </h2>
+          
           <div
             style={{
               display: "flex",
@@ -150,16 +150,32 @@ const EngineClasses = () => {
             }}
           >
             <Input
-              placeholder="Search by Class or Sub Class"
+              placeholder="Search"
+              onClear={()=>setFilteredData(enginesClasses)}
               onChange={handleSearch}
-              style={{ width: "300px", height: "40px", borderRadius: "15px" }}
+              allowClear={true}
+              style={{
+                width: "200px",
+                height: "40px",
+                borderRadius: "15px",
+                marginRight: "10px",
+              }}
             />
+            
             <CustomButton
               text="Downlaod"
+              icon={<DownloadOutlined />}
               onClick={() => exportToPDF(filteredData, columns, "TableData")}
               type="rgba(0, 15, 145, 0.79)"
             />
+            <CustomButton
+              text="Add New"
+              icon={<PlusCircleOutlined />}
+             // onClick={() => handleAddNew()}
+              type="rgba(21, 155, 0, 0.79)"
+            />
           </div>
+
         </div>
         <div
           style={{

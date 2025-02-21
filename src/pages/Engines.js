@@ -1,5 +1,14 @@
-import React, { useEffect, useRef, useState } from "react";
-import { Table, Modal, Input, Card } from "antd";
+import React, { useEffect, useState } from "react";
+import {
+  Table,
+  Modal,
+  Input,
+  Form,
+  Button,
+  Card,
+  Select,
+  notification,
+} from "antd";
 import CustomButton from "../components/CustomButton";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -9,17 +18,63 @@ import { isLoading, setSelectedKey } from "../redux/authSlice";
 import ReactCountryFlag from "react-country-flag";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
+import {
+  ReloadOutlined,
+  DownloadOutlined,
+  PlusCircleOutlined,
+  MoreOutlined,
+} from "@ant-design/icons"; // Import the icon
+const { Option } = Select;
+const { TextArea } = Input;
+
 const Engines = () => {
-  const API_URL = "http://13.61.26.58:5000";
   const { engineData, search } = useSelector((state) => state.eng);
   const { loading, token } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
-  const [tableData, setTableData] = useState(engineData);
+  const [api, contextHolder] = notification.useNotification();
+  const openNotificationWithIcon = (type, title) => {
+    api[type]({
+      message: title,
+    });
+  };
   const [selectedRow, setSelectedRow] = useState(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [filteredData, setFilteredData] = useState(engineData);
   const navigate = useNavigate();
-  const inputRef = useRef(null);
+  const [isAddModalVisible, setIsAddModalVisible] = useState(false);
+  const [form] = Form.useForm();
+
+  const handleAddNew = () => {
+    setIsAddModalVisible(true);
+  };
+
+  const closeAddModal = () => {
+    setIsAddModalVisible(false);
+    form.resetFields();
+  };
+  const API_URL =  "http://13.60.98.221:5000";
+  const handleSubmit = async (values) => {
+    try {
+      dispatch(isLoading(true));
+      // Send the data to the API
+      await axios.post(`${API_URL}/api/engines`, values, {
+        headers: { Authorization: "token" },
+      });  
+
+      openNotificationWithIcon("success", "Engine Added Successfully");
+
+      notification.success({
+        message: "Engine Added",
+        description: "The new engine data has been successfully added!",
+      });
+      dispatch(isLoading(false));
+      closeAddModal(); // Close modal after success
+    } catch (error) {
+      dispatch(isLoading(false));
+      openNotificationWithIcon("error", "Failed to Add Engine");
+      console.error("Error adding engine:", error.message);
+    }
+  };
   const columns = [
     {
       title: "Class",
@@ -36,11 +91,7 @@ const Engines = () => {
       dataIndex: "power(Hp)",
       key: "power(Hp)",
     },
-    {
-      title: "Axle Structure",
-      dataIndex: "axleStructure",
-      key: "axleStructure",
-    },
+
     {
       title: "Power Engine",
       dataIndex: "powerEngine",
@@ -62,8 +113,13 @@ const Engines = () => {
       key: "company",
     },
     {
+      title: "Condition",
+      dataIndex: "condition",
+      key: "condition",
+    },
+    {
       title: "Shed",
-      dataIndex: "Shed",
+      dataIndex: "shed",
       key: "shed",
     },
   ];
@@ -122,8 +178,8 @@ const Engines = () => {
       // const token = await AsyncStorage.getItem("token");
       // if (!token) return     navigate('/dashboard');
       dispatch(isLoading(true));
-      const engineRes = await axios.get(`${API_URL}/api/engines`, {
-        headers: { Authorization: token },
+      const engineRes = await axios.get(`${process.env.API_URL}/api/engines`, {
+        headers: { Authorization: "token" },
       });
 
       dispatch(engines(engineRes.data));
@@ -136,7 +192,9 @@ const Engines = () => {
       console.error("Error fetching engines:", error.message);
     }
   };
-
+  const handelMore = () => {
+    navigate(`/engine/${selectedRow.subClass}`);
+  };
   useEffect(() => {
     if (!search) {
       setFilteredData(engineData);
@@ -167,26 +225,19 @@ const Engines = () => {
               alignItems: "center",
             }}
           >
-            <CustomButton
-              text={"Home"}
-              onClick={() => {
-                dispatch(setSelectedKey("1"));
+            {contextHolder}
 
-                navigate("/dashboard");
-              }}
-              type="rgba(0, 145, 102, 0.78)"
-            />
             <CustomButton
               text="Refresh"
               onClick={fetchEngines}
+              icon={<ReloadOutlined />}
               type="rgba(145, 0, 0, 0.64)"
             />
             <CustomButton
               text="Engine Classes"
               onClick={() => {
-                dispatch(setSelectedKey("3"));
-
-                navigate("/enginesclasses");
+                dispatch(setSelectedKey("2"));
+                navigate("/enginesClasses");
               }}
               type="rgba(0, 0, 0, 0.78)"
             />
@@ -204,14 +255,24 @@ const Engines = () => {
             <Input
               placeholder="Search..."
               onChange={handleSearch}
-              allowClear
-              ref={inputRef}
-              style={{ width: "300px", height: "40px", borderRadius: "15px" }}
+              style={{
+                width: "200px",
+                height: "40px",
+                borderRadius: "15px",
+                marginRight: "10px",
+              }}
             />
             <CustomButton
               text="Downlaod"
+              icon={<DownloadOutlined />}
               onClick={() => exportToPDF(filteredData, columns, "TableData")}
               type="rgba(0, 15, 145, 0.79)"
+            />
+            <CustomButton
+              text="Add New"
+              icon={<PlusCircleOutlined />}
+              onClick={() => handleAddNew()}
+              type="rgba(21, 155, 0, 0.79)"
             />
           </div>
         </div>
@@ -289,8 +350,188 @@ const Engines = () => {
             <p>
               <strong>Company:</strong> {selectedRow.company || "N/A"}
             </p>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "flex-end",
+                alignItems: "center",
+              }}
+            >
+              <CustomButton
+                text="More"
+                icon={<MoreOutlined />}
+                onClick={() => handelMore()}
+                type="rgba(155, 119, 0, 0.79)"
+              />
+            </div>
           </div>
         )}
+      </Modal>
+      <Modal
+        title="Add New Engine"
+        visible={isAddModalVisible}
+        onCancel={closeAddModal}
+        footer={null}
+        centered
+      >
+        <Form
+          form={form}
+          layout="vertical"
+          onFinish={handleSubmit}
+          onReset={closeAddModal}
+          initialValues={{ country: "US" }} // Default values if needed
+        >
+          <Form.Item
+            label="Class"
+            name="class"
+            rules={[{ required: true, message: "Please enter the class!" }]}
+          >
+            <Input placeholder="Enter class" />
+          </Form.Item>
+
+          <Form.Item
+            label="Sub Class"
+            name="subClass"
+            rules={[{ required: true, message: "Please enter the sub-class!" }]}
+          >
+            <Input placeholder="Enter sub-class" />
+          </Form.Item>
+
+          <Form.Item
+            label="Power (Hp)"
+            name="powerHp"
+            rules={[{ required: false, message: "Please enter power (Hp)!" }]}
+          >
+            <Input placeholder="Enter power (Hp)" />
+          </Form.Item>
+
+          <Form.Item
+            label="Axle Structure"
+            name="axleStructure"
+            rules={[
+              { required: false, message: "Please enter axle structure!" },
+            ]}
+          >
+            <Input placeholder="Enter axle structure" />
+          </Form.Item>
+
+          <Form.Item
+            label="Power Engine"
+            name="powerEngine"
+            rules={[{ required: false, message: "Please enter power engine!" }]}
+          >
+            <Input placeholder="Enter power engine" />
+          </Form.Item>
+
+          <Form.Item
+            label="Year"
+            name="year"
+            rules={[
+              {
+                required: false,
+                message: "Please enter the manufacturing year!",
+              },
+            ]}
+          >
+            <Input type="number" placeholder="Enter year" />
+          </Form.Item>
+
+          <Form.Item
+            label="Country"
+            name="country"
+            rules={[{ required: false, message: "Please enter the country!" }]}
+          >
+            <Input placeholder="Enter country" />
+          </Form.Item>
+
+          <Form.Item
+            label="Company"
+            name="company"
+            rules={[
+              { required: false, message: "Please enter the company name!" },
+            ]}
+          >
+            <Input placeholder="Enter company" />
+          </Form.Item>
+          <Form.Item
+            label="Condition"
+            name="condition"
+            rules={[
+              { required: true, message: "Please select the condition!" },
+            ]}
+          >
+            <Select placeholder="Select condition">
+              <Option value="working">Working</Option>
+              <Option value="not-working">Not Working</Option>
+            </Select>
+          </Form.Item>
+          <Form.Item
+            label="Shed"
+            name="shed"
+            rules={[{ required: true, message: "Please enter the shed!" }]}
+          >
+            <Input placeholder="Enter Shed" />
+          </Form.Item>
+          <Form.Item
+            label="Specifications"
+            name="specifications"
+            rules={[
+              { required: false, message: "Please input specifications!" },
+            ]}
+          >
+            <TextArea placeholder="Enter detailed specifications" rows={4} />
+          </Form.Item>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "flex-end",
+              alignItems: "center",
+            }}
+          >
+            <Form.Item>
+              <button
+                type="submit"
+                style={{
+                  padding: "12px 20px",
+                  backgroundColor: "rgba(21, 155, 0, 0.79)",
+                  color: "#fff",
+                  border: "none",
+                  borderRadius: "12px",
+                  marginRight: "10px",
+
+                  cursor: "pointer",
+                  borderRadius: "12px",
+                  color: "#fff",
+                  border: "none",
+                  outline: "none",
+                }}
+              >
+                Submit
+              </button>
+            </Form.Item>{" "}
+            <Form.Item>
+              <button
+                type="reset"
+                style={{
+                  padding: "12px 20px",
+                  backgroundColor: "rgba(155, 0, 0, 0.79)",
+                  color: "#fff",
+                  border: "none",
+                  borderRadius: "12px",
+                  marginRight: "10px",
+
+                  cursor: "pointer",
+                  borderRadius: "12px",
+                  color: "#fff",
+                  border: "none",
+                  outline: "none",
+                }}
+              >
+                Reset
+              </button>
+            </Form.Item>
+          </div>
+        </Form>
       </Modal>
     </div>
   );

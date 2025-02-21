@@ -22,7 +22,7 @@ const CustomButton = ({
     padding: size === "large" ? "12px 20px" : "8px 16px",
     fontSize: size === "large" ? "16px" : "14px",
     cursor: "pointer",
-    borderRadius: "4px",
+    borderRadius: "12px",
     backgroundColor: type,
     color: "#fff",
     border: "none",

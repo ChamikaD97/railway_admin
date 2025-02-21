@@ -14,7 +14,13 @@ import axios from "axios";
 import { useSelector, useDispatch } from "react-redux";
 
 import { isLoading } from "../redux/authSlice";
-
+import {
+  ReloadOutlined,
+  DownloadOutlined,
+  PlusCircleOutlined,
+  MoreOutlined,
+} from "@ant-design/icons"; // Import the icon
+//
 const Failures = () => {
   const {
     engineFailuresData,
@@ -29,19 +35,8 @@ const Failures = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { loading } = useSelector((state) => state.auth);
-  const getRiskTagColor = (risk) => {
-    switch (risk.toLowerCase()) {
-      case "high":
-        return "red";
-      case "medium":
-        return "orange";
-      case "low":
-        return "green";
-      default:
-        return "gray";
-    }
-  };
-  const API_URL = "http://13.61.26.58:5000";
+
+  const API_URL =  "http://13.61.26.58:5000";
   const fetchEngineFailures = async () => {
     try {
       // const token = await AsyncStorage.getItem("token");
@@ -125,16 +120,7 @@ const Failures = () => {
     //   dataIndex: "comments",
     //   key: "comments",
     // },
-    {
-      title: "Risk",
-      dataIndex: "risk",
-      key: "risk",
-      render: (risk) => (
-        <Tag color={getRiskTagColor(risk)} style={{ fontWeight: "bold" }}>
-          {risk.toUpperCase()}
-        </Tag>
-      ),
-    },
+
     {
       title: "Status",
       dataIndex: "status",
@@ -220,28 +206,33 @@ const Failures = () => {
             }}
           >
             <CustomButton
-              text="Home"
-              onClick={() => navigate("/dashboard")}
-              type="rgba(0, 145, 102, 0.78)"
-            />
-            <CustomButton
               text="Refresh"
+              icon={<ReloadOutlined />}
               onClick={fetchEngineFailures}
               type="rgba(145, 0, 0, 0.78)"
             />
           </div>
-
           <h2
             style={{ margin: 0 }}
-            onClick={() => setFilteredData(engineFailuresData)}
+            onClick={() => setFilteredData(filteredData)}
           >
             {name}
           </h2>
-          <Input
-            placeholder="Search..."
-            onChange={handleSearch}
-            style={{ width: "300px", height: "40px", borderRadius: "15px" }}
-          />
+
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            <Input
+              placeholder="Search..."
+              onChange={handleSearch}
+              style={{ width: "300px", height: "40px", borderRadius: "15px" }}
+            />
+            <CustomButton text="Downlaod" type="rgba(0, 15, 145, 0.79)" />
+          </div>
         </div>
 
         <div
@@ -338,11 +329,15 @@ const Failures = () => {
             <p>
               <strong>Comments:</strong> {selectedRow.comments || "N/A"}
             </p>
+           
             <p>
-              <strong>Risk:</strong> {selectedRow.risk || "N/A"}
-            </p>
-            <p>
-              <strong>Status:</strong> {selectedRow.status || "N/A"}
+              <strong>Status: </strong>
+              <Tag
+                color={getStatusTagColor(selectedRow.status)}
+                style={{ fontWeight: "bold" }}
+              >
+                {selectedRow.status.toUpperCase()}
+              </Tag>
             </p>
             <p>
               <strong>LFC:</strong> {selectedRow.LFCComNum || "N/A"}

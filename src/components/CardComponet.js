@@ -23,7 +23,7 @@ const CardComponent = ({
   return (
     <div>
       <Card hoverable className="card"  onClick={onCardClick}>
-      <Typography.Title  level={3} style={{ margin: 5 }}>
+      <Typography.Title  level={3} style={{ margin: 5 , color:'white'}}>
        {title}
       </Typography.Title>
         {/* <Card
